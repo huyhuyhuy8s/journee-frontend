@@ -10,7 +10,7 @@ import {
   TouchableOpacity,
   View,
 } from 'react-native';
-import {Link} from 'expo-router';
+import {Link, router} from 'expo-router';
 import {useAuth} from '@/contexts/AuthContext';
 import {useTheme} from '@/theme';
 import {validateEmail, validatePassword, validateUsername} from '@/utils/auth';
@@ -26,8 +26,6 @@ const Register = () => {
     password: '',
     confirmPassword: '',
     username: '',
-    firstName: '',
-    lastName: '',
   });
 
   const [errors, setErrors] = useState<{
@@ -44,11 +42,12 @@ const Register = () => {
   };
 
   const handleRegister = async () => {
-    // Reset errors
     setErrors({});
 
-    // Validation
     const newErrors: any = {};
+
+    const trimmedPassword = formData.password.trim();
+    const trimmedConfirmPassword = formData.confirmPassword.trim();
 
     if (!formData.email) {
       newErrors.email = 'Email is required';
@@ -65,18 +64,18 @@ const Register = () => {
       }
     }
 
-    if (!formData.password) {
+    if (!trimmedPassword) {
       newErrors.password = 'Password is required';
     } else {
-      const passwordValidation = validatePassword(formData.password);
+      const passwordValidation = validatePassword(trimmedPassword);
       if (!passwordValidation.valid) {
         newErrors.password = passwordValidation.message;
       }
     }
 
-    if (!formData.confirmPassword) {
+    if (!trimmedConfirmPassword) {
       newErrors.confirmPassword = 'Please confirm your password';
-    } else if (formData.password !== formData.confirmPassword) {
+    } else if (trimmedPassword !== trimmedConfirmPassword) {
       newErrors.confirmPassword = 'Passwords do not match';
     }
 
@@ -87,16 +86,16 @@ const Register = () => {
 
     try {
       await register(
-        formData.email.trim().toLowerCase(),
-        formData.password,
         formData.username.trim(),
-        formData.firstName.trim() || undefined,
-        formData.lastName.trim() || undefined
+        formData.email.trim().toLowerCase(),
+        trimmedPassword,
       );
+      router.replace('/login')
     } catch (error: any) {
       Alert.alert('Registration Failed', error.message);
     }
   };
+
 
   const styles = StyleSheet.create({
     container: {
@@ -225,12 +224,13 @@ const Register = () => {
                 autoCapitalize="none"
                 keyboardType="email-address"
                 editable={!isLoading}
+                maxLength={50}
               />
               {errors.email && <Text style={styles.errorText}>{errors.email}</Text>}
             </View>
 
             <View style={styles.inputContainer}>
-              <Text style={styles.label}>Username *</Text>
+              <Text style={styles.label}>Username <Text style={styles.labelHighlight}>*</Text></Text>
               <TextInput
                 style={[styles.input, errors.username && styles.inputError]}
                 placeholder="Choose a username"
@@ -239,12 +239,13 @@ const Register = () => {
                 onChangeText={(value) => handleChange('username', value)}
                 autoCapitalize="words"
                 editable={!isLoading}
+                maxLength={50}
               />
               {errors.username && <Text style={styles.errorText}>{errors.username}</Text>}
             </View>
 
             <View style={styles.inputContainer}>
-              <Text style={styles.label}>Password *</Text>
+              <Text style={styles.label}>Password <Text style={styles.labelHighlight}>*</Text></Text>
               <TextInput
                 style={[styles.input, errors.password && styles.inputError]}
                 placeholder="Create a password"
@@ -254,6 +255,7 @@ const Register = () => {
                 secureTextEntry={isSecurePassword}
                 editable={!isLoading}
                 autoCapitalize='none'
+                maxLength={50}
               />
               <MaterialIcons name={isSecurePassword ? 'visibility' : 'visibility-off'} size={24} color={colors.text}
                              onPress={() => setIsSecurePassword(!isSecurePassword)}
@@ -262,7 +264,7 @@ const Register = () => {
             </View>
 
             <View style={styles.inputContainer}>
-              <Text style={styles.label}>Confirm Password *</Text>
+              <Text style={styles.label}>Confirm Password <Text style={styles.labelHighlight}>*</Text></Text>
               <TextInput
                 style={[styles.input, errors.confirmPassword && styles.inputError]}
                 placeholder="Confirm your password"
@@ -272,6 +274,7 @@ const Register = () => {
                 secureTextEntry={isSecurePassword}
                 autoCapitalize='none'
                 editable={!isLoading}
+                maxLength={50}
               />
               <MaterialIcons name={isSecurePassword ? 'visibility' : 'visibility-off'} size={24} color={colors.text}
                              onPress={() => setIsSecurePassword(!isSecurePassword)}

@@ -1,7 +1,7 @@
 import React from 'react';
-import { View, Text, TouchableOpacity, StyleSheet, Alert } from 'react-native';
-import { useAuth } from '@/contexts/AuthContext';
-import { useTheme } from '@/theme';
+import {Alert, StyleSheet, Text, TouchableOpacity, View} from 'react-native';
+import {useAuth} from '@/contexts/AuthContext';
+import {useTheme} from '@/theme';
 
 interface LogoutButtonProps {
   style?: any;
@@ -9,13 +9,13 @@ interface LogoutButtonProps {
   variant?: 'primary' | 'secondary' | 'text';
 }
 
-export const LogoutButton: React.FC<LogoutButtonProps> = ({ 
-  style, 
-  textStyle,
-  variant = 'primary' 
-}) => {
-  const { logout, isLoading } = useAuth();
-  const { colors, isDark } = useTheme();
+export const LogoutButton: React.FC<LogoutButtonProps> = ({
+                                                            style,
+                                                            textStyle,
+                                                            variant = 'primary'
+                                                          }) => {
+  const {logout, isLoading} = useAuth();
+  const {colors, isDark} = useTheme();
 
   const handleLogout = () => {
     Alert.alert(
@@ -32,7 +32,7 @@ export const LogoutButton: React.FC<LogoutButtonProps> = ({
           onPress: logout,
         },
       ],
-      { cancelable: true }
+      {cancelable: true}
     );
   };
 
@@ -66,10 +66,10 @@ export const LogoutButton: React.FC<LogoutButtonProps> = ({
   const getTextStyle = () => {
     switch (variant) {
       case 'primary':
-        return { color: '#ffffff', fontWeight: '600' as const, fontSize: 16 };
+        return {color: '#ffffff', fontWeight: '600' as const, fontSize: 16};
       case 'secondary':
       case 'text':
-        return { color: '#ff4444', fontWeight: '600' as const, fontSize: 16 };
+        return {color: '#ff4444', fontWeight: '600' as const, fontSize: 16};
       default:
         return {};
     }
@@ -89,19 +89,17 @@ export const LogoutButton: React.FC<LogoutButtonProps> = ({
 };
 
 export const UserInfo: React.FC = () => {
-  const { user } = useAuth();
-  const { colors } = useTheme();
+  const {user} = useAuth();
+  const {colors} = useTheme();
 
   if (!user) return null;
 
   return (
     <View style={styles.userInfoContainer}>
-      <Text style={[styles.username, { color: colors.text }]}>
-        {user.firstName && user.lastName
-          ? `${user.firstName} ${user.lastName}`
-          : user.username}
+      <Text style={[styles.username, {color: colors.text}]}>
+        {user.name}
       </Text>
-      <Text style={[styles.email, { color: colors.text, opacity: 0.7 }]}>
+      <Text style={[styles.email, {color: colors.text, opacity: 0.7}]}>
         {user.email}
       </Text>
     </View>
