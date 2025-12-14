@@ -1,30 +1,29 @@
 import {createContext, ReactNode, useContext, useState} from "react";
-import {IUser} from "@/types";
+import {BackendResponse, BackendResponseError, IUser} from "@/types";
 import * as SecureStore from 'expo-secure-store';
 import AsyncStorage from '@react-native-async-storage/async-storage';
-import axios from "axios";
+import {AxiosError} from "axios";
 import {isUndefined} from "lodash";
-import {config} from "@/config/env";
+import {DEFAULT_BACKEND_RESPONSE} from "@/utils/constants";
+import apiClient from "@/utils/apiClient";
+import {ToastAndroid} from "react-native";
 
 interface IUserContext {
   user: IUser | null;
   isAuthenticated: boolean;
   isLoading: boolean;
-  login: (email: string, password: string) => Promise<void>;
-  register: (name: string, email: string, password: string, avatar?: string) => Promise<void>;
-  logout: () => Promise<void>;
+  login: (email: string, password: string) => Promise<BackendResponse>;
+  register: (name: string, email: string, password: string, avatar?: string) => Promise<BackendResponse>;
+  logout: () => Promise<BackendResponse>;
 }
 
 const AuthContext = createContext<IUserContext>({
   user: null,
   isAuthenticated: false,
   isLoading: true,
-  login: async () => {
-  },
-  register: async () => {
-  },
-  logout: async () => {
-  }
+  login: async () => DEFAULT_BACKEND_RESPONSE,
+  register: async () => DEFAULT_BACKEND_RESPONSE,
+  logout: async () => DEFAULT_BACKEND_RESPONSE,
 });
 
 interface IAuthProviderProps {
@@ -36,60 +35,50 @@ export const AuthProvider = (props: IAuthProviderProps) => {
   const [isAuthenticated, setIsAuthenticated] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
 
-  const BACKEND_URL = config.BACKEND_URL;
-
-  const login = async (email: string, password: string) => {
+  const login = async (email: string, password: string): Promise<BackendResponse> => {
     setIsLoading(true);
     try {
-      const response = await axios.post(`${BACKEND_URL}/api/users/login`, {email, password});
+      const response = await apiClient.post('/users/login', {email, password})
       const results = response.data.results;
+      const meta = response.data.meta;
 
       const token = results.token;
       const user = {
         id: results.id,
         name: results.name,
         email: results.email,
-        // avatar: results.avatar
+        avatar: results.avatar
       };
-
-      console.log('Token', token);
-      console.log('User', user);
 
       await SecureStore.setItemAsync('authToken', token);
       await AsyncStorage.setItem('userData', JSON.stringify(user))
 
       setUser(user);
       setIsAuthenticated(true);
-    } catch (error) {
-      console.error(error);
-      throw error;
+      return {
+        status: meta.status,
+        message: meta.message
+      }
+    } catch (error: AxiosError<BackendResponseError> | any) {
+      ToastAndroid.show(`Error when logging ${error.status}: ${error.error}, ${error.message}`, ToastAndroid.LONG);
+      return error
     } finally {
       setIsLoading(false);
     }
   }
 
-  const register = async (name: string, email: string, password: string, avatar?: string) => {
+  const register = async (name: string, email: string, password: string, avatar?: string): Promise<BackendResponse> => {
     setIsLoading(true);
     try {
-      const response = await axios.post(`${BACKEND_URL}/api/users/register`, {name, email, password, avatar});
-      const results = response.data.results;
-
-      const token = results.token;
-      const user = {
-        id: results.id,
-        name: results.name,
-        email: results.email,
-        avatar: results.avatars
+      const response = await apiClient.post('/users/register', {name, email, password, avatar});
+      return {
+        status: response.data.meta.status,
+        message: response.data.meta.message
       }
 
-      await SecureStore.setItemAsync('authToken', token);
-      await AsyncStorage.setItem('userData', JSON.stringify(user))
-
-      setUser(user);
-      setIsAuthenticated(true);
-    } catch (error) {
-      console.error(error);
-      throw error;
+    } catch (error: AxiosError | any) {
+      console.error(`Error when register account ${error.status}: ${error.error}, ${error.message}`);
+      return error
     } finally {
       setIsLoading(false);
     }
@@ -98,24 +87,20 @@ export const AuthProvider = (props: IAuthProviderProps) => {
   const logout = async () => {
     setIsLoading(true);
     try {
-      const token = await SecureStore.getItemAsync('authToken');
-      console.log('Token', token);
-      const response = await axios.post(`${BACKEND_URL}/api/users/logout`, {
-        headers: {
-          'Authorization': `Bearer ${token}`
-        }
-      });
-      const {message} = response.data;
-
-      if (message) console.log(message);
+      const response = await apiClient.post('/users/logout')
+      const meta = response.data.meta;
 
       await SecureStore.deleteItemAsync('authToken');
       await AsyncStorage.removeItem('userData');
       setUser(null);
       setIsAuthenticated(false);
-    } catch (error) {
-      console.error(error);
-      throw error;
+      return {
+        status: meta.status,
+        message: meta.message
+      }
+    } catch (error: AxiosError | any) {
+      console.error(`Error when logout ${error.status}: ${error.error}, ${error.message}`);
+      return error
     } finally {
       setIsLoading(false);
     }

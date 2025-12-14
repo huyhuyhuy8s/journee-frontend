@@ -17,6 +17,7 @@
     "axios": "^1.12.2",
     "burnt": "^0.13.0",
     "classnames": "^2.5.1",
+    "culori": "^4.0.2",
     "expo": "~54.0.29",
     "expo-background-task": "~1.0.10",
     "expo-battery": "~10.0.8",
@@ -56,6 +57,7 @@
     "react-native-worklets": "0.5.1"
   },
   "devDependencies": {
+    "@types/culori": "^4.0.1",
     "@types/lodash": "^4.17.21",
     "@types/react": "~19.1.0",
     "lodash": "^4.17.21",
