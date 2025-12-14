@@ -1,0 +1,309 @@
+import React, {useState} from 'react';
+import {
+  ActivityIndicator,
+  Alert,
+  KeyboardAvoidingView,
+  Platform,
+  ScrollView,
+  StyleSheet,
+  TextInput,
+  TouchableOpacity,
+  View,
+} from 'react-native';
+import {Link} from 'expo-router';
+import {useAuth} from '@/contexts/AuthContext';
+import {useTheme} from '@/theme';
+import {validateEmail, validatePassword, validateUsername} from '@/utils/auth';
+import {MaterialIcons} from "@expo/vector-icons";
+import {SafeAreaView, Text} from '@/components/global'
+
+const Register = () => {
+  const {register, isLoading} = useAuth();
+  const {colors, isDark} = useTheme();
+
+  const [formData, setFormData] = useState({
+    email: '',
+    password: '',
+    confirmPassword: '',
+    username: '',
+    firstName: '',
+    lastName: '',
+  });
+
+  const [errors, setErrors] = useState<{
+    email?: string;
+    password?: string;
+    confirmPassword?: string;
+    username?: string;
+  }>({});
+
+  const [isSecurePassword, setIsSecurePassword] = useState(true);
+
+  const handleChange = (field: string, value: string) => {
+    setFormData(prev => ({...prev, [field]: value}));
+  };
+
+  const handleRegister = async () => {
+    // Reset errors
+    setErrors({});
+
+    // Validation
+    const newErrors: any = {};
+
+    if (!formData.email) {
+      newErrors.email = 'Email is required';
+    } else if (!validateEmail(formData.email)) {
+      newErrors.email = 'Please enter a valid email';
+    }
+
+    if (!formData.username) {
+      newErrors.username = 'Username is required';
+    } else {
+      const usernameValidation = validateUsername(formData.username);
+      if (!usernameValidation.valid) {
+        newErrors.username = usernameValidation.message;
+      }
+    }
+
+    if (!formData.password) {
+      newErrors.password = 'Password is required';
+    } else {
+      const passwordValidation = validatePassword(formData.password);
+      if (!passwordValidation.valid) {
+        newErrors.password = passwordValidation.message;
+      }
+    }
+
+    if (!formData.confirmPassword) {
+      newErrors.confirmPassword = 'Please confirm your password';
+    } else if (formData.password !== formData.confirmPassword) {
+      newErrors.confirmPassword = 'Passwords do not match';
+    }
+
+    if (Object.keys(newErrors).length > 0) {
+      setErrors(newErrors);
+      return;
+    }
+
+    try {
+      await register(
+        formData.email.trim().toLowerCase(),
+        formData.password,
+        formData.username.trim(),
+        formData.firstName.trim() || undefined,
+        formData.lastName.trim() || undefined
+      );
+    } catch (error: any) {
+      Alert.alert('Registration Failed', error.message);
+    }
+  };
+
+  const styles = StyleSheet.create({
+    container: {
+      flex: 1,
+      backgroundColor: colors.background,
+    },
+    scrollContent: {
+      flexGrow: 1,
+      justifyContent: 'center',
+      padding: 24,
+      paddingVertical: 40,
+    },
+    header: {
+      marginBottom: 32,
+      alignItems: 'center',
+    },
+    title: {
+      fontSize: 36,
+      fontWeight: 'bold',
+      color: colors.text,
+      marginBottom: 8,
+      fontFamily: 'Whyte',
+    },
+    subtitle: {
+      fontSize: 16,
+      color: colors.text,
+      opacity: 0.7,
+    },
+    form: {
+      marginBottom: 24,
+    },
+    row: {
+      flexDirection: 'row',
+      gap: 12,
+    },
+    inputContainer: {
+      marginBottom: 16,
+      flex: 1,
+    },
+    label: {
+      fontSize: 14,
+      fontWeight: '600',
+      marginBottom: 8,
+      opacity: 0.8,
+    },
+    labelHighlight: {
+      color: colors.primary,
+      fontWeight: 'bold',
+    },
+    input: {
+      backgroundColor: isDark ? 'rgba(255, 255, 255, 0.1)' : 'rgba(0, 0, 0, 0.05)',
+      borderRadius: 12,
+      padding: 16,
+      fontSize: 16,
+      color: colors.text,
+      borderWidth: 1,
+      borderColor: isDark ? 'rgba(255, 255, 255, 0.1)' : 'rgba(0, 0, 0, 0.1)',
+    },
+    inputError: {
+      borderColor: '#ff4444',
+    },
+    errorText: {
+      color: '#ff4444',
+      fontSize: 12,
+      marginTop: 4,
+    },
+    button: {
+      backgroundColor: colors.primary,
+      borderRadius: 12,
+      padding: 16,
+      alignItems: 'center',
+      marginTop: 8,
+    },
+    buttonDisabled: {
+      opacity: 0.6,
+    },
+    buttonText: {
+      color: '#ffffff',
+      fontSize: 16,
+      fontWeight: 'bold',
+    },
+    footer: {
+      alignItems: 'center',
+      marginTop: 24,
+    },
+    footerText: {
+      fontSize: 14,
+      color: colors.text,
+      opacity: 0.7,
+    },
+    link: {
+      color: colors.primary,
+      fontWeight: 'bold',
+    },
+    securePassword: {
+      position: 'absolute',
+      top: 42.5,
+      right: 17.5,
+    },
+  });
+
+  return (
+    <SafeAreaView>
+      <KeyboardAvoidingView
+        behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
+        style={{flex: 1}}
+      >
+        <ScrollView
+          contentContainerStyle={styles.scrollContent}
+          keyboardShouldPersistTaps="handled"
+          showsVerticalScrollIndicator={false}
+        >
+          <View style={styles.header}>
+            <MaterialIcons name='share-location' size={128} color={colors.primary}/>
+          </View>
+
+          <View style={styles.form}>
+            <View style={styles.inputContainer}>
+              <Text style={styles.label}>Email <Text style={styles.labelHighlight}>*</Text></Text>
+              <TextInput
+                style={[styles.input, errors.email && styles.inputError]}
+                placeholder="Enter your email"
+                placeholderTextColor={isDark ? 'rgba(255, 255, 255, 0.4)' : 'rgba(0, 0, 0, 0.4)'}
+                value={formData.email}
+                onChangeText={(value) => handleChange('email', value)}
+                autoCapitalize="none"
+                keyboardType="email-address"
+                editable={!isLoading}
+              />
+              {errors.email && <Text style={styles.errorText}>{errors.email}</Text>}
+            </View>
+
+            <View style={styles.inputContainer}>
+              <Text style={styles.label}>Username *</Text>
+              <TextInput
+                style={[styles.input, errors.username && styles.inputError]}
+                placeholder="Choose a username"
+                placeholderTextColor={isDark ? 'rgba(255, 255, 255, 0.4)' : 'rgba(0, 0, 0, 0.4)'}
+                value={formData.username}
+                onChangeText={(value) => handleChange('username', value)}
+                autoCapitalize="words"
+                editable={!isLoading}
+              />
+              {errors.username && <Text style={styles.errorText}>{errors.username}</Text>}
+            </View>
+
+            <View style={styles.inputContainer}>
+              <Text style={styles.label}>Password *</Text>
+              <TextInput
+                style={[styles.input, errors.password && styles.inputError]}
+                placeholder="Create a password"
+                placeholderTextColor={isDark ? 'rgba(255, 255, 255, 0.4)' : 'rgba(0, 0, 0, 0.4)'}
+                value={formData.password}
+                onChangeText={(value) => handleChange('password', value)}
+                secureTextEntry={isSecurePassword}
+                editable={!isLoading}
+                autoCapitalize='none'
+              />
+              <MaterialIcons name={isSecurePassword ? 'visibility' : 'visibility-off'} size={24} color={colors.text}
+                             onPress={() => setIsSecurePassword(!isSecurePassword)}
+                             style={styles.securePassword}/>
+              {errors.password && <Text style={styles.errorText}>{errors.password}</Text>}
+            </View>
+
+            <View style={styles.inputContainer}>
+              <Text style={styles.label}>Confirm Password *</Text>
+              <TextInput
+                style={[styles.input, errors.confirmPassword && styles.inputError]}
+                placeholder="Confirm your password"
+                placeholderTextColor={isDark ? 'rgba(255, 255, 255, 0.4)' : 'rgba(0, 0, 0, 0.4)'}
+                value={formData.confirmPassword}
+                onChangeText={(value) => handleChange('confirmPassword', value)}
+                secureTextEntry={isSecurePassword}
+                autoCapitalize='none'
+                editable={!isLoading}
+              />
+              <MaterialIcons name={isSecurePassword ? 'visibility' : 'visibility-off'} size={24} color={colors.text}
+                             onPress={() => setIsSecurePassword(!isSecurePassword)}
+                             style={styles.securePassword}/>
+              {errors.confirmPassword && <Text style={styles.errorText}>{errors.confirmPassword}</Text>}
+            </View>
+
+            <TouchableOpacity
+              style={[styles.button, isLoading && styles.buttonDisabled]}
+              onPress={handleRegister}
+              disabled={isLoading}
+            >
+              {isLoading ? (
+                <ActivityIndicator color="#ffffff"/>
+              ) : (
+                <Text style={styles.buttonText}>Create Account</Text>
+              )}
+            </TouchableOpacity>
+          </View>
+
+          <View style={styles.footer}>
+            <Text style={styles.footerText}>
+              Already have an account?{' '}
+              <Link href="/login" style={styles.link}>
+                Sign In
+              </Link>
+            </Text>
+          </View>
+        </ScrollView>
+      </KeyboardAvoidingView>
+    </SafeAreaView>
+  );
+};
+
+export default Register;
