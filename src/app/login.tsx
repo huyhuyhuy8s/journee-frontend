@@ -6,8 +6,6 @@ import {
   Platform,
   ScrollView,
   StyleSheet,
-  Text,
-  TextInput,
   TouchableOpacity,
   View,
 } from 'react-native';
@@ -15,8 +13,8 @@ import {Link} from 'expo-router';
 import {useAuth} from '@/contexts/AuthContext';
 import {useTheme} from '@/theme';
 import {validateEmail} from '@/utils/auth';
-import {StatusBar} from 'expo-status-bar';
 import {MaterialIcons} from "@expo/vector-icons/";
+import {SafeAreaView, Text, TextInput} from "@/components/global";
 
 const Login = () => {
   const {login, isLoading} = useAuth();
@@ -30,6 +28,7 @@ const Login = () => {
   const handleLogin = async () => {
     setErrors({});
     const newErrors: { email?: string; password?: string } = {};
+    const trimmedPassword = password.trim();
 
     if (!email) {
       newErrors.email = 'Email is required';
@@ -37,7 +36,7 @@ const Login = () => {
       newErrors.email = 'Please enter a valid email';
     }
 
-    if (!password) {
+    if (!trimmedPassword) {
       newErrors.password = 'Password is required';
     }
 
@@ -47,17 +46,17 @@ const Login = () => {
     }
 
     try {
-      await login(email.trim().toLowerCase(), password);
+      const response = await login(email.trim().toLowerCase(), trimmedPassword);
+      if (response.status === 401) setErrors({
+        email: 'Invalid email or password',
+        password: 'Invalid email or password'
+      });
     } catch (error: any) {
       Alert.alert('Login Failed', error.message);
     }
   };
 
   const styles = StyleSheet.create({
-    container: {
-      flex: 1,
-      backgroundColor: colors.background,
-    },
     scrollContent: {
       flexGrow: 1,
       justifyContent: 'center',
@@ -145,8 +144,8 @@ const Login = () => {
   });
 
   return (
-    <View style={styles.container}>
-      <StatusBar style={isDark ? 'light' : 'dark'}/>
+
+    <SafeAreaView>
       <KeyboardAvoidingView
         behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
         style={{flex: 1}}
@@ -165,13 +164,13 @@ const Login = () => {
               <TextInput
                 style={[styles.input, errors.email && styles.inputError]}
                 placeholder="Enter your email"
-                placeholderTextColor={isDark ? 'rgba(255, 255, 255, 0.4)' : 'rgba(0, 0, 0, 0.4)'}
                 value={email}
                 onChangeText={setEmail}
                 autoCapitalize="none"
                 keyboardType="email-address"
                 editable={!isLoading}
                 accessibilityLanguage={'en-US'}
+                maxLength={50}
               />
               {errors.email && <Text style={styles.errorText}>{errors.email}</Text>}
             </View>
@@ -188,6 +187,7 @@ const Login = () => {
                 editable={!isLoading}
                 accessibilityLanguage={'en-US'}
                 autoCapitalize='none'
+                maxLength={50}
               />
               <MaterialIcons name={isSecurePassword ? 'visibility' : 'visibility-off'} size={24} color={colors.text}
                              onPress={() => setIsSecurePassword(!isSecurePassword)}
@@ -219,7 +219,8 @@ const Login = () => {
           </View>
         </ScrollView>
       </KeyboardAvoidingView>
-    </View>
+    </SafeAreaView>
+
   );
 };
 

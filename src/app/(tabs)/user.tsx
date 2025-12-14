@@ -1,7 +1,7 @@
 import SafeAreaView from "@/components/global/SafeAreaView";
 import Text from "@/components/global/Text";
 import {useTheme} from "@/theme";
-import {StyleSheet, View, ScrollView} from "react-native";
+import {ScrollView, StyleSheet, View} from "react-native";
 import {useAuth} from "@/contexts/AuthContext";
 import {LogoutButton, UserInfo} from "@/components/auth/AuthComponents";
 
@@ -69,15 +69,15 @@ const User = () => {
       <ScrollView style={styles.container}>
         <View style={styles.header}>
           <Text style={styles.title}>Profile</Text>
-          <UserInfo />
+          <UserInfo/>
         </View>
 
         <View style={styles.section}>
           <Text style={styles.sectionTitle}>Account Information</Text>
-          
+
           <View style={styles.infoRow}>
             <Text style={styles.label}>Username</Text>
-            <Text style={styles.value}>{user.username}</Text>
+            <Text style={styles.value}>{user.name}</Text>
           </View>
 
           <View style={styles.infoRow}>
@@ -85,27 +85,13 @@ const User = () => {
             <Text style={styles.value}>{user.email}</Text>
           </View>
 
-          {user.firstName && (
-            <View style={styles.infoRow}>
-              <Text style={styles.label}>First Name</Text>
-              <Text style={styles.value}>{user.firstName}</Text>
-            </View>
-          )}
-
-          {user.lastName && (
-            <View style={styles.infoRow}>
-              <Text style={styles.label}>Last Name</Text>
-              <Text style={styles.value}>{user.lastName}</Text>
-            </View>
-          )}
-
           <View style={styles.infoRow}>
             <Text style={styles.label}>User ID</Text>
-            <Text style={styles.value}>{user._id}</Text>
+            <Text style={styles.value}>{user.id}</Text>
           </View>
         </View>
 
-        <LogoutButton variant="primary" />
+        <LogoutButton variant="primary"/>
       </ScrollView>
     </SafeAreaView>
   );
