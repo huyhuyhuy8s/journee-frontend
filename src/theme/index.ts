@@ -1,7 +1,8 @@
-import {createContext, createElement, PropsWithChildren, useContext, useEffect, useState} from "react";
+import {createContext, createElement, ReactNode, useContext, useEffect, useState} from "react";
 import {useColorScheme} from "react-native";
 import {darkColors, lightColors} from "@/theme/colors";
 import {IThemeContext, TThemeScheme} from "@/theme/types";
+import {convertColorObject} from "@/utils/colorConvert";
 
 export const ThemeContext = createContext<IThemeContext>({
   isDark: false,
@@ -10,7 +11,7 @@ export const ThemeContext = createContext<IThemeContext>({
   }
 });
 
-export const ThemeProvider = (props: PropsWithChildren<{}>) => {
+export const ThemeProvider = ({children}: { children: ReactNode }) => {
   const colorScheme = useColorScheme();
   const [isDark, setIsDark] = useState<boolean>(colorScheme === 'dark');
 
@@ -20,11 +21,11 @@ export const ThemeProvider = (props: PropsWithChildren<{}>) => {
 
   const defaultTheme: IThemeContext = {
     isDark,
-    colors: isDark ? darkColors : lightColors,
+    colors: isDark ? convertColorObject(darkColors) : convertColorObject(lightColors),
     setScheme: (scheme: TThemeScheme) => setIsDark(scheme === 'dark')
   };
 
-  return createElement(ThemeContext.Provider, {value: defaultTheme}, props.children);
+  return createElement(ThemeContext.Provider, {value: defaultTheme}, children);
 };
 
 export const useTheme = () => useContext(ThemeContext);
