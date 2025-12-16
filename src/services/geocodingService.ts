@@ -1,4 +1,3 @@
-// services/geocodingService.ts
 import * as Location from "expo-location";
 
 interface OpenMapsResponse {
@@ -107,6 +106,190 @@ export class GlobalGeocodingService {
     "establishment",
     "point_of_interest",
   ];
+
+  /**
+   * Compare and get the best result from both APIs (main entry point)
+   */
+  static async getBestGeocodingResult(
+    latitude: number,
+    longitude: number
+  ): Promise<BestGeocodingResult | null> {
+    try {
+      // Check cache first
+      const cachedResult = this.getCachedResult(latitude, longitude);
+      if (cachedResult) {
+        return cachedResult;
+      }
+
+      // Check if there's already a pending request for this location
+      const requestKey = this.generateRequestKey(latitude, longitude);
+
+      if (this.pendingRequests.has(requestKey)) {
+        console.log(`⏳ Request already pending for: ${requestKey}`);
+        return await this.pendingRequests.get(requestKey)!;
+      }
+
+      // Create new request
+      const requestPromise = this.performGeocodingRequest(latitude, longitude);
+      this.pendingRequests.set(requestKey, requestPromise);
+
+      try {
+        const result = await requestPromise;
+
+        // Cache the result if successful
+        if (result) {
+          this.setCachedResult(latitude, longitude, result);
+        }
+
+        return result;
+      } finally {
+        // Clean up pending request
+        this.pendingRequests.delete(requestKey);
+      }
+    } catch (error) {
+      console.error("❌ Error in getBestGeocodingResult:", error);
+      return null;
+    }
+  }
+
+  /**
+   * Reverse geocode using OpenMaps API
+   */
+  static async reverseGeocodeOpenMaps(
+    latitude: number,
+    longitude: number
+  ): Promise<OpenMapsGeocodingResult | null> {
+    try {
+      if (!this.OPEN_MAPS_API_KEY) {
+        console.warn("⚠️ OpenMaps API key not found in environment variables");
+        return null;
+      }
+
+      const url = `${this.OPEN_MAPS_BASE_URL}/geocode/reverse?latlng=${latitude},${longitude}&apiKey=${this.OPEN_MAPS_API_KEY}`;
+
+      const response = await fetch(url, {
+        method: "GET",
+        headers: {
+          "Content-Type": "application/json",
+        },
+      });
+
+      if (!response.ok) {
+        console.error(
+          `❌ OpenMaps API error: ${response.status} ${response.statusText}`
+        );
+        return null;
+      }
+
+      const data: OpenMapsResponse = await response.json();
+
+      if (data.status !== "OK" || !data.results || data.results.length === 0) {
+        console.warn("⚠️ OpenMaps returned no results");
+        return null;
+      }
+
+      // Find the best result based on types priority
+      const bestResult = this.findBestOpenMapsResult(data.results);
+
+      if (!bestResult) {
+        return null;
+      }
+
+      const placeName = this.extractPlaceName(bestResult);
+      const formattedAddress =
+        bestResult.formatted_address || "Unknown Address";
+
+      return {
+        place: placeName,
+        value: formattedAddress,
+        source: "openmaps",
+        types: bestResult.types || [],
+      };
+    } catch (error) {
+      console.error("❌ Error with OpenMaps reverse geocoding:", error);
+      return null;
+    }
+  }
+
+  /**
+   * Reverse geocode using Expo Location API
+   */
+  static async reverseGeocodeExpo(
+    latitude: number,
+    longitude: number
+  ): Promise<ExpoGeocodingResult | null> {
+    try {
+      const result = await Location.reverseGeocodeAsync({
+        latitude,
+        longitude,
+      });
+
+      if (result && result[0]) {
+        const location = result[0];
+        const placeName =
+          location.name ||
+          location.street ||
+          location.district ||
+          location.subregion ||
+          location.city ||
+          "Unknown Place";
+
+        const formattedAddress =
+          location.formattedAddress ||
+          `${location.street || ""} ${location.city || ""}`.trim() ||
+          "Unknown Address";
+
+        return {
+          place: placeName,
+          value: formattedAddress,
+          source: "expo",
+        };
+      }
+
+      return null;
+    } catch (error) {
+      console.error("❌ Error with Expo reverse geocoding:", error);
+      return null;
+    }
+  }
+
+  static getFallbackResult(
+    latitude: number,
+    longitude: number
+  ): BestGeocodingResult {
+    return {
+      place: `Location (${latitude.toFixed(4)}, ${longitude.toFixed(4)})`,
+      value: `${latitude.toFixed(6)}, ${longitude.toFixed(6)}`,
+      source: "combined",
+      confidence: "low",
+      // 🆕 Add missing fields
+      formattedAddress: `${latitude.toFixed(6)}, ${longitude.toFixed(6)}`,
+      street: undefined,
+      city: undefined,
+      region: undefined,
+      country: undefined,
+      postalCode: undefined,
+    };
+  }
+
+  /**
+   * Clear cache (useful for testing or memory management)
+   */
+  static clearCache(): void {
+    this.cache.clear();
+    this.pendingRequests.clear();
+    console.log("🗑️ Geocoding cache cleared");
+  }
+
+  /**
+   * Get cache statistics
+   */
+  static getCacheStats(): { size: number; pendingRequests: number } {
+    return {
+      size: this.cache.size,
+      pendingRequests: this.pendingRequests.size,
+    };
+  }
 
   /**
    * Generate cache key for coordinates (rounded to reduce cache misses for nearby locations)
@@ -245,56 +428,11 @@ export class GlobalGeocodingService {
     const a =
       Math.sin(dLat / 2) * Math.sin(dLat / 2) +
       Math.cos(lat1 * (Math.PI / 180)) *
-        Math.cos(lat2 * (Math.PI / 180)) *
-        Math.sin(dLon / 2) *
-        Math.sin(dLon / 2);
+      Math.cos(lat2 * (Math.PI / 180)) *
+      Math.sin(dLon / 2) *
+      Math.sin(dLon / 2);
     const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
     return R * c;
-  }
-
-  /**
-   * Compare and get the best result from both APIs (main entry point)
-   */
-  static async getBestGeocodingResult(
-    latitude: number,
-    longitude: number
-  ): Promise<BestGeocodingResult | null> {
-    try {
-      // Check cache first
-      const cachedResult = this.getCachedResult(latitude, longitude);
-      if (cachedResult) {
-        return cachedResult;
-      }
-
-      // Check if there's already a pending request for this location
-      const requestKey = this.generateRequestKey(latitude, longitude);
-
-      if (this.pendingRequests.has(requestKey)) {
-        console.log(`⏳ Request already pending for: ${requestKey}`);
-        return await this.pendingRequests.get(requestKey)!;
-      }
-
-      // Create new request
-      const requestPromise = this.performGeocodingRequest(latitude, longitude);
-      this.pendingRequests.set(requestKey, requestPromise);
-
-      try {
-        const result = await requestPromise;
-
-        // Cache the result if successful
-        if (result) {
-          this.setCachedResult(latitude, longitude, result);
-        }
-
-        return result;
-      } finally {
-        // Clean up pending request
-        this.pendingRequests.delete(requestKey);
-      }
-    } catch (error) {
-      console.error("❌ Error in getBestGeocodingResult:", error);
-      return null;
-    }
   }
 
   /**
@@ -327,107 +465,6 @@ export class GlobalGeocodingService {
     console.log("🎯 Best result selected:", bestResult);
 
     return bestResult;
-  }
-
-  /**
-   * Reverse geocode using OpenMaps API
-   */
-  static async reverseGeocodeOpenMaps(
-    latitude: number,
-    longitude: number
-  ): Promise<OpenMapsGeocodingResult | null> {
-    try {
-      if (!this.OPEN_MAPS_API_KEY) {
-        console.warn("⚠️ OpenMaps API key not found in environment variables");
-        return null;
-      }
-
-      const url = `${this.OPEN_MAPS_BASE_URL}/geocode/reverse?latlng=${latitude},${longitude}&apiKey=${this.OPEN_MAPS_API_KEY}`;
-
-      const response = await fetch(url, {
-        method: "GET",
-        headers: {
-          "Content-Type": "application/json",
-        },
-      });
-
-      if (!response.ok) {
-        console.error(
-          `❌ OpenMaps API error: ${response.status} ${response.statusText}`
-        );
-        return null;
-      }
-
-      const data: OpenMapsResponse = await response.json();
-
-      if (data.status !== "OK" || !data.results || data.results.length === 0) {
-        console.warn("⚠️ OpenMaps returned no results");
-        return null;
-      }
-
-      // Find the best result based on types priority
-      const bestResult = this.findBestOpenMapsResult(data.results);
-
-      if (!bestResult) {
-        return null;
-      }
-
-      const placeName = this.extractPlaceName(bestResult);
-      const formattedAddress =
-        bestResult.formatted_address || "Unknown Address";
-
-      return {
-        place: placeName,
-        value: formattedAddress,
-        source: "openmaps",
-        types: bestResult.types || [],
-      };
-    } catch (error) {
-      console.error("❌ Error with OpenMaps reverse geocoding:", error);
-      return null;
-    }
-  }
-
-  /**
-   * Reverse geocode using Expo Location API
-   */
-  static async reverseGeocodeExpo(
-    latitude: number,
-    longitude: number
-  ): Promise<ExpoGeocodingResult | null> {
-    try {
-      const result = await Location.reverseGeocodeAsync({
-        latitude,
-        longitude,
-      });
-
-      if (result && result[0]) {
-        const location = result[0];
-        const placeName =
-          location.name ||
-          location.street ||
-          location.district ||
-          location.subregion ||
-          location.city ||
-          "Unknown Place";
-
-        const formattedAddress =
-          location.formattedAddress ||
-          `${location.street || ""} ${location.city || ""}`.trim() ||
-          "Unknown Address";
-
-        return {
-          place: placeName,
-          value: formattedAddress,
-          source: "expo",
-        };
-      }
-
-      return null;
-    } catch (error) {
-      console.error("❌ Error with Expo reverse geocoding:", error);
-      return null;
-    }
   }
 
   /**
@@ -686,43 +723,5 @@ export class GlobalGeocodingService {
     return genericNames.some((generic) =>
       placeName.toLowerCase().includes(generic.toLowerCase())
     );
-  }
-
-  static getFallbackResult(
-    latitude: number,
-    longitude: number
-  ): BestGeocodingResult {
-    return {
-      place: `Location (${latitude.toFixed(4)}, ${longitude.toFixed(4)})`,
-      value: `${latitude.toFixed(6)}, ${longitude.toFixed(6)}`,
-      source: "combined",
-      confidence: "low",
-      // 🆕 Add missing fields
-      formattedAddress: `${latitude.toFixed(6)}, ${longitude.toFixed(6)}`,
-      street: undefined,
-      city: undefined,
-      region: undefined,
-      country: undefined,
-      postalCode: undefined,
-    };
-  }
-
-  /**
-   * Clear cache (useful for testing or memory management)
-   */
-  static clearCache(): void {
-    this.cache.clear();
-    this.pendingRequests.clear();
-    console.log("🗑️ Geocoding cache cleared");
-  }
-
-  /**
-   * Get cache statistics
-   */
-  static getCacheStats(): { size: number; pendingRequests: number } {
-    return {
-      size: this.cache.size,
-      pendingRequests: this.pendingRequests.size,
-    };
   }
 }

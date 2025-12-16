@@ -1,7 +1,6 @@
-// components/Map/hooks/useLocationPermissions.ts
-import { useState } from "react";
+import {useState} from "react";
 import * as Location from "expo-location";
-import { LocationService } from "@/src/components/Map/services/locationService";
+import {LocationService} from "@/components/Map/services/locationService";
 
 export const useLocationPermissions = () => {
   const [foregroundPermission, setForegroundPermission] =

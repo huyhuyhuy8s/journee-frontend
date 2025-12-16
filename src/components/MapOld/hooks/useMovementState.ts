@@ -1,9 +1,9 @@
 // components/Map/hooks/useMovementState.ts
-import { useState, useEffect } from "react";
-import { StorageService } from "@/src/components/Map/services/storageService";
-import { STATE_STABILITY_CONFIG, MOVEMENT_STATES } from "@/src/components/Map/utils/constants";
-import { getNotificationColor } from "@/src/components/Map/utils/movementStateUtils";
-import { getIntervalText } from "@/src/components/Map/utils/locationUtils";
+import {useEffect, useState} from "react";
+import {StorageService} from "@/components/Map/services/storageService";
+import {MOVEMENT_STATES, STATE_STABILITY_CONFIG} from "@/components/Map/utils/constants";
+import {getIntervalText} from "@/components/Map/utils/locationUtils";
+import {getNotificationColor} from "@/components/Map/utils/movementStateUtils";
 
 export const useMovementState = () => {
   const [currentMovementState, setCurrentMovementState] =
@@ -35,7 +35,7 @@ export const useMovementState = () => {
       (s) => s.name === currentMovementState
     );
     if (!stateConfig)
-      return { color: "#999", text: "Unknown", speed: "0 km/h", stability: "" };
+      return {color: "#999", text: "Unknown", speed: "0 km/h", stability: ""};
 
     const intervalText = getIntervalText(stateConfig.updateInterval);
     const stabilityTime = Math.round(timeSinceStateChange / 1000);

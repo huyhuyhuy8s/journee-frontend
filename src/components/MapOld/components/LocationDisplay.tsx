@@ -1,15 +1,15 @@
 import React from "react";
-import { Text } from "react-native";
 import * as Location from "expo-location";
-import { formatCoordinates } from "@/src/components/Map/utils/locationUtils";
+import {Text} from "@/components/global";
+import {formatCoordinates} from "@/components/Map/utils/locationUtils";
 
 interface LocationDisplayProps {
   location: Location.LocationObject | null;
 }
 
 export const LocationDisplay: React.FC<LocationDisplayProps> = ({
-  location,
-}) => {
+                                                                  location,
+                                                                }) => {
   return (
     <Text
       style={{

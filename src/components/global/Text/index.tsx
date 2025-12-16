@@ -5,12 +5,19 @@ import {ITextProps} from "@/components/global/Text/types";
 
 const Text = (props: ITextProps) => {
   const {colors} = useTheme()
+  const {style, ...restProps} = props
+
+  const styles = {
+    text: {
+      color: colors.text,
+    }
+  }
 
   return (
-    <T style={{
-      color: colors.text,
-      ...props.style
-    }}>
+    <T style={[
+      styles.text,
+      style
+    ]}>
       {props.children}
     </T>
   )

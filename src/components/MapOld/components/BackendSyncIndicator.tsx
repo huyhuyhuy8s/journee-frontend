@@ -1,14 +1,15 @@
-import React, { useState, useEffect } from "react";
-import { Text, TouchableOpacity } from "react-native";
-import { BackendApiServices } from "@/src/services/backendApiServices";
+import React, {useEffect, useState} from "react";
+import {TouchableOpacity} from "react-native";
+import {BackendApiServices} from "@/services/backendApiServices";
+import {Text} from "@/components/global";
 
 interface BackendSyncIndicatorProps {
   isTracking: boolean;
 }
 
 export const BackendSyncIndicator: React.FC<BackendSyncIndicatorProps> = ({
-  isTracking,
-}) => {
+                                                                            isTracking,
+                                                                          }) => {
   const [pendingCount, setPendingCount] = useState(0);
   const [isRetrying, setIsRetrying] = useState(false);
   const [lastSyncTime, setLastSyncTime] = useState<number | null>(null);
