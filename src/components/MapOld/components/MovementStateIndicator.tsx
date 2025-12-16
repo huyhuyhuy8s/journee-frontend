@@ -1,5 +1,5 @@
 import React from "react";
-import { Text } from "react-native";
+import {Text} from "@/components/global";
 
 interface MovementStateInfo {
   color: string;
@@ -13,8 +13,8 @@ interface MovementStateIndicatorProps {
 }
 
 export const MovementStateIndicator: React.FC<MovementStateIndicatorProps> = ({
-  movementInfo,
-}) => {
+                                                                                movementInfo,
+                                                                              }) => {
   return (
     <Text
       style={{

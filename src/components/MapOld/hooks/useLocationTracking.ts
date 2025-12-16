@@ -1,16 +1,14 @@
-// components/Map/hooks/useLocationTracking.ts
-import { useState, useCallback, useRef } from "react";
+import {useCallback, useRef, useState} from "react";
 import * as Location from "expo-location";
-import { LocationService } from "@/src/components/Map/services/locationService";
-// 🆕 Import shared types
-import type { Address, MapRegion } from "@/src/components/Map/utils/types";
+import {MapRegion} from "@/components/Map/utils/types";
+import {LocationService} from "@/components/Map/services/locationService";
 
 export const useLocationTracking = () => {
   const [location, setLocation] = useState<Location.LocationObject | null>(
     null
   );
   const [region, setRegion] = useState<MapRegion | null>(null);
-  const [address, setAddress] = useState<Address>({});
+  const [address, setAddress] = useState<any>({});
 
   const lastLocationRef = useRef<Location.LocationObject | null>(null);
 
@@ -82,7 +80,7 @@ export const useLocationTracking = () => {
         ) > 0.0001 ||
         Math.abs(
           lastLocationRef.current.coords.longitude -
-            newLocation.coords.longitude
+          newLocation.coords.longitude
         ) > 0.0001
       ) {
         console.log("📍 Location changed significantly, updating...");

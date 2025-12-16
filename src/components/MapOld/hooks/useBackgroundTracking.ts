@@ -1,7 +1,7 @@
-import { useState, useEffect } from "react";
-import { BackgroundTaskService } from "@/src/components/Map/services/backgroundTaskService";
-import { BACKGROUND_LOCATION_TASK } from "@/src/components/Map/utils/constants";
+import {useEffect, useState} from "react";
 import * as Location from "expo-location";
+import {BACKGROUND_LOCATION_TASK} from "@/components/Map/utils/constants";
+import {BackgroundTaskService} from "@/components/Map/services/backgroundTaskService";
 
 export const useBackgroundTracking = () => {
   const [isTracking, setIsTracking] = useState(false);

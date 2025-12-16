@@ -1,5 +1,5 @@
 import * as Location from "expo-location";
-import { GlobalGeocodingService } from "@/src/services/geocodingService";
+import {GlobalGeocodingService} from "@/services/geocodingService";
 
 export class LocationService {
   static async requestForegroundPermissions(): Promise<Location.PermissionStatus> {

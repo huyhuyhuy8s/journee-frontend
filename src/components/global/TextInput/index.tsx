@@ -14,7 +14,8 @@ const TextInput = (props: ITextInputProps) => {
       borderWidth: 1,
       borderColor: 'rgba(0,0,0,0.1)',
       fontSize: 16,
-      color: '#000',
+      color: colors.text,
+      backgroundColor: colors.background700,
     },
   })
 
@@ -22,10 +23,6 @@ const TextInput = (props: ITextInputProps) => {
     <T
       {...restProps}
       style={[
-        {
-          color: colors.text,
-          backgroundColor: colors.background,
-        },
         styles.input,
         style
       ]}
