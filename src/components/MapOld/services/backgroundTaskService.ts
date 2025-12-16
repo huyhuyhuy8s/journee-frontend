@@ -1,23 +1,15 @@
 import * as Location from "expo-location";
 import * as TaskManager from "expo-task-manager";
 import AsyncStorage from "@react-native-async-storage/async-storage";
-import {
-  BACKGROUND_LOCATION_TASK,
-  MOVEMENT_STATES,
-  STATE_STABILITY_CONFIG,
-} from "@/src/components/Map/utils/constants";
-import { calculateDistance, getIntervalText } from "@/src/components/Map/utils/locationUtils";
-import {
-  determineMovementState,
-  getNotificationColor,
-  getActivityType,
-} from "@/src/components/Map/utils/movementStateUtils";
-import { validateStateChange } from "@/src/components/Map/utils/validators";
-import { StorageService } from "./storageService";
-import { VisitDetectionService } from "@/src/services/visitDetectionService";
-import { GlobalGeocodingService } from "@/src/services/geocodingService";
-import type { MovementAnalysis, LocationData } from "@/src/components/Map/utils/types";
-import { BackendApiServices } from "@/src/services/backendApiServices";
+import {LocationData, MovementAnalysis} from "@/components/Map/utils/types";
+import {calculateDistance, getIntervalText} from "@/components/Map/utils/locationUtils";
+import {StorageService} from "@/components/Map/services/storageService";
+import {BACKGROUND_LOCATION_TASK, MOVEMENT_STATES, STATE_STABILITY_CONFIG} from "@/components/Map/utils/constants";
+import {VisitDetectionService} from "@/services/visitDetectionService";
+import {GlobalGeocodingService} from "@/services/geocodingService";
+import {validateStateChange} from "@/components/Map/utils/validators";
+import {BackendApiServices} from "@/services/backendApiServices";
+import {getActivityType, getNotificationColor} from "@/components/Map/utils/movementStateUtils";
 
 interface StateSpecificData {
   lastLocationCheck: number;
@@ -51,86 +43,6 @@ export class BackgroundTaskService {
   private static readonly SPEED_MONITORING_DURATION = 60 * 1000; // 1 minute
   private static readonly SLOW_MOVING_INTERVAL = 30 * 60 * 1000; // 30 minutes
   private static readonly STATIONARY_INTERVAL = 60 * 60 * 1000; // 1 hour
-
-  private static async getAuthToken(): Promise<string | null> {
-    try {
-      const now = Date.now();
-
-      // Check if we have a recent cached token
-      if (
-        this.cachedToken &&
-        now - this.lastTokenRefresh < this.TOKEN_REFRESH_INTERVAL
-      ) {
-        console.log("🔄 [AUTH] Using cached token (recent)");
-        return this.cachedToken;
-      }
-
-      // Prevent multiple simultaneous token refreshes
-      if (this.tokenRefreshPromise) {
-        console.log("🔄 [AUTH] Waiting for ongoing token refresh...");
-        return await this.tokenRefreshPromise;
-      }
-
-      // Start token refresh process
-      this.tokenRefreshPromise = this.refreshTokenFromStorage();
-      const token = await this.tokenRefreshPromise;
-      this.tokenRefreshPromise = null;
-
-      return token;
-    } catch (error) {
-      console.error("❌ [AUTH] Error in token management:", error);
-      this.tokenRefreshPromise = null;
-      return this.cachedToken; // Fallback to cached token
-    }
-  }
-
-  private static async refreshTokenFromStorage(): Promise<string | null> {
-    try {
-      console.log("🔄 [AUTH] Refreshing token from storage...");
-
-      // Try multiple storage keys for token
-      const tokenSources = [
-        "authToken",
-        "userToken",
-        "@journee/authToken",
-        "auth_token",
-      ];
-
-      let token: string | null = null;
-
-      for (const key of tokenSources) {
-        try {
-          const storedToken = await AsyncStorage.getItem(key);
-          if (storedToken && storedToken.length > 20) {
-            // Basic token validation
-            token = storedToken;
-            console.log(`✅ [AUTH] Token found in key: ${key}`);
-            break;
-          }
-        } catch (error) {
-          console.warn(`⚠️ [AUTH] Failed to read from ${key}:`, error);
-        }
-      }
-
-      if (token) {
-        // Update cache
-        this.cachedToken = token;
-        this.lastTokenRefresh = Date.now();
-
-        // Store token in background-accessible location
-        await AsyncStorage.setItem("backgroundAuthToken", token);
-        console.log("✅ [AUTH] Token cached for background use");
-
-        return token;
-      }
-
-      console.warn("⚠️ [AUTH] No valid token found in any storage location");
-      return null;
-    } catch (error) {
-      console.error("❌ [AUTH] Error refreshing token:", error);
-      return null;
-    }
-  }
 
   static async initializeTokenCache(token: string): Promise<void> {
     try {
@@ -226,11 +138,11 @@ export class BackgroundTaskService {
       let stateData: StateSpecificData = stateDataStr
         ? JSON.parse(stateDataStr)
         : {
-            lastLocationCheck: Date.now(),
-            speedSamples: [],
-            locationSamples: [],
-            currentPhase: "waiting",
-          };
+          lastLocationCheck: Date.now(),
+          speedSamples: [],
+          locationSamples: [],
+          currentPhase: "waiting",
+        };
 
       const movementAnalysis = await this.analyzeMovement(
         location,
@@ -379,7 +291,7 @@ export class BackgroundTaskService {
           "⚠️ [BACKEND] No token for visit creation, queuing for retry"
         );
         await this.queuePendingRequest("visits", "POST", visitData);
-        return { queued: true };
+        return {queued: true};
       }
 
       console.log(
@@ -419,34 +331,6 @@ export class BackgroundTaskService {
       // Queue for retry on network errors
       await this.queuePendingRequest("visits", "POST", visitData);
       throw error;
-    }
-  }
-
-  private static async queuePendingRequest(
-    endpoint: string,
-    method: string,
-    data: any
-  ): Promise<void> {
-    try {
-      const pendingRequests =
-        (await AsyncStorage.getItem("pendingRequests")) || "[]";
-      const requests = JSON.parse(pendingRequests);
-
-      const newRequest = {
-        id: Date.now().toString(),
-        endpoint,
-        method,
-        data,
-        timestamp: Date.now(),
-        retries: 0,
-      };
-
-      requests.push(newRequest);
-      await AsyncStorage.setItem("pendingRequests", JSON.stringify(requests));
-
-      console.log("💾 [BACKEND] Stored pending request for retry");
-    } catch (error) {
-      console.error("❌ [BACKEND] Error queuing request:", error);
     }
   }
 
@@ -549,6 +433,319 @@ export class BackgroundTaskService {
       );
     } catch (error) {
       console.error("❌ [BACKEND] Error during retry:", error);
+    }
+  }
+
+  static async sendLocationUpdateToBackend(locationData: any): Promise<void> {
+    try {
+      if (!this.BACKEND_URL) {
+        console.warn("⚠️ Backend URL not configured");
+        return;
+      }
+
+      const response = await fetch(`${this.BACKEND_URL}/api/locations`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          // Add authentication headers if needed
+        },
+        body: JSON.stringify({
+          latitude: locationData.coords.latitude,
+          longitude: locationData.coords.longitude,
+          enhancedPlace: locationData.enhancedPlace,
+          enhancedAddress: locationData.enhancedAddress,
+          geocodingSource: locationData.geocodingSource,
+          geocodingConfidence: locationData.geocodingConfidence,
+          timestamp: locationData.timestamp,
+          accuracy: locationData.coords.accuracy,
+          speed: locationData.coords.speed,
+        }),
+      });
+
+      if (response.ok) {
+        console.log("✅ Location update sent to backend");
+      } else {
+        console.error(
+          `❌ Failed to send location update to backend: ${response.status}`
+        );
+      }
+    } catch (error) {
+      console.error("❌ Error sending location update to backend:", error);
+    }
+  }
+
+  static async sendVisitToBackend(visit: any): Promise<void> {
+    try {
+      const success = await BackendApiServices.sendVisit({
+        id: visit.id,
+        place: visit.place,
+        address: visit.address,
+        latitude: visit.latitude,
+        longitude: visit.longitude,
+        arrivalTime: visit.arrivalTime,
+        departureTime: visit.departureTime,
+        duration: visit.duration,
+        confidence: visit.confidence,
+        source: visit.source,
+        visitType: visit.visitType,
+        metadata: visit.metadata,
+      });
+
+      if (success) {
+        console.log(`✅ Visit sent to backend: ${visit.place}`);
+      } else {
+        console.log(`⏳ Visit queued for retry: ${visit.place}`);
+      }
+    } catch (error) {
+      console.error("❌ Error sending visit to backend:", error);
+    }
+  }
+
+  static async startBackgroundTracking(): Promise<boolean> {
+    try {
+      console.log("🌙 Starting background tracking...");
+
+      const isTaskDefined = TaskManager.isTaskDefined(BACKGROUND_LOCATION_TASK);
+      if (!isTaskDefined) {
+        console.error("❌ Task not defined");
+        return false;
+      }
+
+      const hasStarted = await Location.hasStartedLocationUpdatesAsync(
+        BACKGROUND_LOCATION_TASK
+      );
+      if (hasStarted) {
+        console.log("⚠️ Already started");
+        return true;
+      }
+
+      const backgroundStatus = await Location.getBackgroundPermissionsAsync();
+      if (backgroundStatus.status !== Location.PermissionStatus.GRANTED) {
+        console.error("❌ Background permission required");
+        return false;
+      }
+
+      await AsyncStorage.removeItem("currentTrackingConfig");
+      const initialState = MOVEMENT_STATES.FAST_MOVING;
+
+      await Location.startLocationUpdatesAsync(BACKGROUND_LOCATION_TASK, {
+        accuracy: initialState.accuracy,
+        timeInterval: initialState.updateInterval,
+        distanceInterval: initialState.distanceInterval,
+        foregroundService: {
+          notificationTitle: "Journey Tracker",
+          notificationBody: `${initialState.name.replace(
+            "_",
+            " "
+          )} - ${getIntervalText(initialState.updateInterval)} updates`,
+          notificationColor: "#007AFF",
+        },
+        pausesUpdatesAutomatically: false,
+        activityType: Location.ActivityType.Other,
+      });
+
+      await AsyncStorage.setItem(
+        "currentTrackingConfig",
+        JSON.stringify({
+          name: initialState.name,
+          updateInterval: initialState.updateInterval,
+          distanceInterval: initialState.distanceInterval,
+        })
+      );
+
+      // Initialize state-specific data
+      const initialStateData: StateSpecificData = {
+        lastLocationCheck: Date.now(),
+        speedSamples: [],
+        locationSamples: [],
+        currentPhase: "waiting",
+      };
+      await AsyncStorage.setItem(
+        "stateSpecificData",
+        JSON.stringify(initialStateData)
+      );
+
+      console.log(`✅ Background tracking started with ${initialState.name}`);
+      return true;
+    } catch (error) {
+      console.error("❌ Error starting tracking:", error);
+      return false;
+    }
+  }
+
+  static async stopBackgroundTracking(): Promise<void> {
+    try {
+      const hasStarted = await Location.hasStartedLocationUpdatesAsync(
+        BACKGROUND_LOCATION_TASK
+      );
+      if (hasStarted) {
+        await Location.stopLocationUpdatesAsync(BACKGROUND_LOCATION_TASK);
+      }
+      await StorageService.clearTrackingData();
+      await AsyncStorage.removeItem("stateSpecificData");
+      console.log("✅ Background tracking stopped");
+    } catch (error) {
+      console.error("❌ Error stopping tracking:", error);
+    }
+  }
+
+  static async restartBackgroundTrackingWithNewInterval(
+    newState: any
+  ): Promise<void> {
+    try {
+      const currentConfig = await AsyncStorage.getItem("currentTrackingConfig");
+      const newConfigStr = JSON.stringify({
+        name: newState.name,
+        updateInterval: newState.updateInterval,
+        distanceInterval: newState.distanceInterval,
+      });
+
+      if (currentConfig === newConfigStr) {
+        console.log(
+          `⚡ Already using ${newState.name} configuration - no restart needed`
+        );
+        return;
+      }
+
+      const hasStarted = await Location.hasStartedLocationUpdatesAsync(
+        BACKGROUND_LOCATION_TASK
+      );
+      if (hasStarted) {
+        await Location.stopLocationUpdatesAsync(BACKGROUND_LOCATION_TASK);
+      }
+
+      await new Promise((resolve) => setTimeout(resolve, 2000));
+
+      await Location.startLocationUpdatesAsync(BACKGROUND_LOCATION_TASK, {
+        accuracy: newState.accuracy,
+        timeInterval: newState.updateInterval,
+        distanceInterval: newState.distanceInterval,
+        foregroundService: {
+          notificationTitle: "Journey Tracker",
+          notificationBody: `${newState.name.replace(
+            "_",
+            " "
+          )} - ${getIntervalText(newState.updateInterval)} updates`,
+          notificationColor: getNotificationColor(newState.name),
+        },
+        deferredUpdatesInterval: newState.updateInterval,
+        deferredUpdatesDistance: newState.distanceInterval,
+        pausesUpdatesAutomatically: false,
+        activityType: getActivityType(newState.name),
+      });
+
+      await AsyncStorage.setItem("currentTrackingConfig", newConfigStr);
+      console.log(`✅ Tracking restarted with ${newState.name}`);
+    } catch (error) {
+      console.error("❌ Error restarting tracking:", error);
+    }
+  }
+
+  private static async getAuthToken(): Promise<string | null> {
+    try {
+      const now = Date.now();
+
+      // Check if we have a recent cached token
+      if (
+        this.cachedToken &&
+        now - this.lastTokenRefresh < this.TOKEN_REFRESH_INTERVAL
+      ) {
+        console.log("🔄 [AUTH] Using cached token (recent)");
+        return this.cachedToken;
+      }
+
+      // Prevent multiple simultaneous token refreshes
+      if (this.tokenRefreshPromise) {
+        console.log("🔄 [AUTH] Waiting for ongoing token refresh...");
+        return await this.tokenRefreshPromise;
+      }
+
+      // Start token refresh process
+      this.tokenRefreshPromise = this.refreshTokenFromStorage();
+      const token = await this.tokenRefreshPromise;
+      this.tokenRefreshPromise = null;
+
+      return token;
+    } catch (error) {
+      console.error("❌ [AUTH] Error in token management:", error);
+      this.tokenRefreshPromise = null;
+      return this.cachedToken; // Fallback to cached token
+    }
+  }
+
+  private static async refreshTokenFromStorage(): Promise<string | null> {
+    try {
+      console.log("🔄 [AUTH] Refreshing token from storage...");
+
+      // Try multiple storage keys for token
+      const tokenSources = [
+        "authToken",
+        "userToken",
+        "@journee/authToken",
+        "auth_token",
+      ];
+
+      let token: string | null = null;
+
+      for (const key of tokenSources) {
+        try {
+          const storedToken = await AsyncStorage.getItem(key);
+          if (storedToken && storedToken.length > 20) {
+            // Basic token validation
+            token = storedToken;
+            console.log(`✅ [AUTH] Token found in key: ${key}`);
+            break;
+          }
+        } catch (error) {
+          console.warn(`⚠️ [AUTH] Failed to read from ${key}:`, error);
+        }
+      }
+
+      if (token) {
+        // Update cache
+        this.cachedToken = token;
+        this.lastTokenRefresh = Date.now();
+
+        // Store token in background-accessible location
+        await AsyncStorage.setItem("backgroundAuthToken", token);
+        console.log("✅ [AUTH] Token cached for background use");
+
+        return token;
+      }
+
+      console.warn("⚠️ [AUTH] No valid token found in any storage location");
+      return null;
+    } catch (error) {
+      console.error("❌ [AUTH] Error refreshing token:", error);
+      return null;
+    }
+  }
+
+  private static async queuePendingRequest(
+    endpoint: string,
+    method: string,
+    data: any
+  ): Promise<void> {
+    try {
+      const pendingRequests =
+        (await AsyncStorage.getItem("pendingRequests")) || "[]";
+      const requests = JSON.parse(pendingRequests);
+
+      const newRequest = {
+        id: Date.now().toString(),
+        endpoint,
+        method,
+        data,
+        timestamp: Date.now(),
+        retries: 0,
+      };
+
+      requests.push(newRequest);
+      await AsyncStorage.setItem("pendingRequests", JSON.stringify(requests));
+
+      console.log("💾 [BACKEND] Stored pending request for retry");
+    } catch (error) {
+      console.error("❌ [BACKEND] Error queuing request:", error);
     }
   }
 
@@ -1127,44 +1324,6 @@ export class BackgroundTaskService {
     }
   }
 
-  static async sendLocationUpdateToBackend(locationData: any): Promise<void> {
-    try {
-      if (!this.BACKEND_URL) {
-        console.warn("⚠️ Backend URL not configured");
-        return;
-      }
-
-      const response = await fetch(`${this.BACKEND_URL}/api/locations`, {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-          // Add authentication headers if needed
-        },
-        body: JSON.stringify({
-          latitude: locationData.coords.latitude,
-          longitude: locationData.coords.longitude,
-          enhancedPlace: locationData.enhancedPlace,
-          enhancedAddress: locationData.enhancedAddress,
-          geocodingSource: locationData.geocodingSource,
-          geocodingConfidence: locationData.geocodingConfidence,
-          timestamp: locationData.timestamp,
-          accuracy: locationData.coords.accuracy,
-          speed: locationData.coords.speed,
-        }),
-      });
-
-      if (response.ok) {
-        console.log("✅ Location update sent to backend");
-      } else {
-        console.error(
-          `❌ Failed to send location update to backend: ${response.status}`
-        );
-      }
-    } catch (error) {
-      console.error("❌ Error sending location update to backend:", error);
-    }
-  }
-
   private static async sendVisitToBackendSafely(visit: any): Promise<void> {
     try {
       const token = await this.getAuthToken();
@@ -1234,10 +1393,10 @@ export class BackgroundTaskService {
         stack: error.stack || "No stack trace",
         location: location
           ? {
-              lat: location.coords.latitude,
-              lng: location.coords.longitude,
-              timestamp: location.timestamp,
-            }
+            lat: location.coords.latitude,
+            lng: location.coords.longitude,
+            timestamp: location.timestamp,
+          }
           : null,
         timestamp: Date.now(),
         authTokenAvailable: !!this.cachedToken,
@@ -1268,178 +1427,11 @@ export class BackgroundTaskService {
       );
     }
   }
-
-  static async sendVisitToBackend(visit: any): Promise<void> {
-    try {
-      const success = await BackendApiServices.sendVisit({
-        id: visit.id,
-        place: visit.place,
-        address: visit.address,
-        latitude: visit.latitude,
-        longitude: visit.longitude,
-        arrivalTime: visit.arrivalTime,
-        departureTime: visit.departureTime,
-        duration: visit.duration,
-        confidence: visit.confidence,
-        source: visit.source,
-        visitType: visit.visitType,
-        metadata: visit.metadata,
-      });
-
-      if (success) {
-        console.log(`✅ Visit sent to backend: ${visit.place}`);
-      } else {
-        console.log(`⏳ Visit queued for retry: ${visit.place}`);
-      }
-    } catch (error) {
-      console.error("❌ Error sending visit to backend:", error);
-    }
-  }
-
-  static async startBackgroundTracking(): Promise<boolean> {
-    try {
-      console.log("🌙 Starting background tracking...");
-
-      const isTaskDefined = TaskManager.isTaskDefined(BACKGROUND_LOCATION_TASK);
-      if (!isTaskDefined) {
-        console.error("❌ Task not defined");
-        return false;
-      }
-
-      const hasStarted = await Location.hasStartedLocationUpdatesAsync(
-        BACKGROUND_LOCATION_TASK
-      );
-      if (hasStarted) {
-        console.log("⚠️ Already started");
-        return true;
-      }
-
-      const backgroundStatus = await Location.getBackgroundPermissionsAsync();
-      if (backgroundStatus.status !== Location.PermissionStatus.GRANTED) {
-        console.error("❌ Background permission required");
-        return false;
-      }
-
-      await AsyncStorage.removeItem("currentTrackingConfig");
-      const initialState = MOVEMENT_STATES.FAST_MOVING;
-
-      await Location.startLocationUpdatesAsync(BACKGROUND_LOCATION_TASK, {
-        accuracy: initialState.accuracy,
-        timeInterval: initialState.updateInterval,
-        distanceInterval: initialState.distanceInterval,
-        foregroundService: {
-          notificationTitle: "Journey Tracker",
-          notificationBody: `${initialState.name.replace(
-            "_",
-            " "
-          )} - ${getIntervalText(initialState.updateInterval)} updates`,
-          notificationColor: "#007AFF",
-        },
-        pausesUpdatesAutomatically: false,
-        activityType: Location.ActivityType.Other,
-      });
-
-      await AsyncStorage.setItem(
-        "currentTrackingConfig",
-        JSON.stringify({
-          name: initialState.name,
-          updateInterval: initialState.updateInterval,
-          distanceInterval: initialState.distanceInterval,
-        })
-      );
-
-      // Initialize state-specific data
-      const initialStateData: StateSpecificData = {
-        lastLocationCheck: Date.now(),
-        speedSamples: [],
-        locationSamples: [],
-        currentPhase: "waiting",
-      };
-      await AsyncStorage.setItem(
-        "stateSpecificData",
-        JSON.stringify(initialStateData)
-      );
-
-      console.log(`✅ Background tracking started with ${initialState.name}`);
-      return true;
-    } catch (error) {
-      console.error("❌ Error starting tracking:", error);
-      return false;
-    }
-  }
-
-  static async stopBackgroundTracking(): Promise<void> {
-    try {
-      const hasStarted = await Location.hasStartedLocationUpdatesAsync(
-        BACKGROUND_LOCATION_TASK
-      );
-      if (hasStarted) {
-        await Location.stopLocationUpdatesAsync(BACKGROUND_LOCATION_TASK);
-      }
-      await StorageService.clearTrackingData();
-      await AsyncStorage.removeItem("stateSpecificData");
-      console.log("✅ Background tracking stopped");
-    } catch (error) {
-      console.error("❌ Error stopping tracking:", error);
-    }
-  }
-
-  static async restartBackgroundTrackingWithNewInterval(
-    newState: any
-  ): Promise<void> {
-    try {
-      const currentConfig = await AsyncStorage.getItem("currentTrackingConfig");
-      const newConfigStr = JSON.stringify({
-        name: newState.name,
-        updateInterval: newState.updateInterval,
-        distanceInterval: newState.distanceInterval,
-      });
-
-      if (currentConfig === newConfigStr) {
-        console.log(
-          `⚡ Already using ${newState.name} configuration - no restart needed`
-        );
-        return;
-      }
-
-      const hasStarted = await Location.hasStartedLocationUpdatesAsync(
-        BACKGROUND_LOCATION_TASK
-      );
-      if (hasStarted) {
-        await Location.stopLocationUpdatesAsync(BACKGROUND_LOCATION_TASK);
-      }
-
-      await new Promise((resolve) => setTimeout(resolve, 2000));
-
-      await Location.startLocationUpdatesAsync(BACKGROUND_LOCATION_TASK, {
-        accuracy: newState.accuracy,
-        timeInterval: newState.updateInterval,
-        distanceInterval: newState.distanceInterval,
-        foregroundService: {
-          notificationTitle: "Journey Tracker",
-          notificationBody: `${newState.name.replace(
-            "_",
-            " "
-          )} - ${getIntervalText(newState.updateInterval)} updates`,
-          notificationColor: getNotificationColor(newState.name),
-        },
-        deferredUpdatesInterval: newState.updateInterval,
-        deferredUpdatesDistance: newState.distanceInterval,
-        pausesUpdatesAutomatically: false,
-        activityType: getActivityType(newState.name),
-      });
-
-      await AsyncStorage.setItem("currentTrackingConfig", newConfigStr);
-      console.log(`✅ Tracking restarted with ${newState.name}`);
-    } catch (error) {
-      console.error("❌ Error restarting tracking:", error);
-    }
-  }
 }
 
 TaskManager.defineTask(
   BACKGROUND_LOCATION_TASK,
-  async ({ data, error }: { data: any; error: any }) => {
+  async ({data, error}: { data: any; error: any }) => {
     const taskStartTime = Date.now();
     console.log("🌙 Background task triggered:", new Date().toISOString());
 
@@ -1449,7 +1441,7 @@ TaskManager.defineTask(
     }
 
     if (data) {
-      const { locations } = data as { locations: Location.LocationObject[] };
+      const {locations} = data as { locations: Location.LocationObject[] };
       if (locations && locations[0]) {
         console.log("📍 Processing location:", {
           lat: locations[0].coords.latitude.toFixed(6),

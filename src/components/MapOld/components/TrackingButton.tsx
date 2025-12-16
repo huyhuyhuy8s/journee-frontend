@@ -1,6 +1,6 @@
 import React from "react";
-import { Text } from "react-native";
-import { Button } from "tamagui";
+import {TouchableOpacity} from "react-native";
+import {Text} from "@/components/global";
 
 interface TrackingButtonProps {
   isTracking: boolean;
@@ -9,12 +9,12 @@ interface TrackingButtonProps {
 }
 
 export const TrackingButton: React.FC<TrackingButtonProps> = ({
-  isTracking,
-  onStart,
-  onStop,
-}) => {
+                                                                isTracking,
+                                                                onStart,
+                                                                onStop,
+                                                              }) => {
   return isTracking ? (
-    <Button
+    <TouchableOpacity
       onPress={onStop}
       style={{
         position: "absolute",
@@ -23,12 +23,12 @@ export const TrackingButton: React.FC<TrackingButtonProps> = ({
         backgroundColor: "#FF6B6B",
       }}
     >
-      <Text style={{ color: "white", textAlign: "center" }}>
+      <Text style={{color: "white", textAlign: "center"}}>
         {"Stop\nTracking"}
       </Text>
-    </Button>
+    </TouchableOpacity>
   ) : (
-    <Button
+    <TouchableOpacity
       onPress={onStart}
       style={{
         position: "absolute",
@@ -37,9 +37,9 @@ export const TrackingButton: React.FC<TrackingButtonProps> = ({
         backgroundColor: "#4CAF50",
       }}
     >
-      <Text style={{ color: "white", textAlign: "center" }}>
+      <Text style={{color: "white", textAlign: "center"}}>
         {"Start\nTracking"}
       </Text>
-    </Button>
+    </TouchableOpacity>
   );
 };

@@ -1,5 +1,5 @@
-import React from "react";
+import {TextProps} from "react-native";
 
-export interface ITextProps extends Omit<React.PropsWithChildren, 'style'> {
+export interface ITextProps extends TextProps {
   style?: object
 }

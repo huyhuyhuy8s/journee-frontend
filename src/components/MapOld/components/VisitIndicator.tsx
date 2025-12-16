@@ -1,14 +1,14 @@
-import React, { useState, useEffect } from "react";
-import { Text, TouchableOpacity } from "react-native";
-import { VisitDetectionService } from "@/src/services/visitDetectionService";
+import React, {useEffect, useState} from "react";
+import {Text, TouchableOpacity} from "react-native";
+import {VisitDetectionService} from "@/services/visitDetectionService";
 
 interface VisitIndicatorProps {
   isTracking: boolean;
 }
 
 export const VisitIndicator: React.FC<VisitIndicatorProps> = ({
-  isTracking,
-}) => {
+                                                                isTracking,
+                                                              }) => {
   const [pendingVisit, setPendingVisit] = useState<any>(null);
   const [recentVisits, setRecentVisits] = useState<any[]>([]);
 
