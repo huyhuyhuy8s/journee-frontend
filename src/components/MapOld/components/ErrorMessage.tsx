@@ -1,11 +1,11 @@
 import React from "react";
-import { Text } from "react-native";
+import {Text} from "@/components/global";
 
 interface ErrorMessageProps {
   errorMsg: string | null;
 }
 
-export const ErrorMessage: React.FC<ErrorMessageProps> = ({ errorMsg }) => {
+export const ErrorMessage: React.FC<ErrorMessageProps> = ({errorMsg}) => {
   if (!errorMsg) return null;
 
   return (

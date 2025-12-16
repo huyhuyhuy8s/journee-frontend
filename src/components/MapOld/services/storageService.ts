@@ -1,6 +1,6 @@
 import AsyncStorage from "@react-native-async-storage/async-storage";
-import { STORAGE_KEYS } from "@/src/components/Map/utils/constants";
-import type { LocationData, UIUpdateData } from "@/src/components/Map/utils/types";
+import {LocationData} from "@/components/Map/utils/types";
+import {STORAGE_KEYS} from "@/components/Map/utils/constants";
 
 export class StorageService {
   static async storeLocationData(locationData: LocationData): Promise<void> {
@@ -25,17 +25,17 @@ export class StorageService {
     }
   }
 
-  static async updateUIData(data: UIUpdateData): Promise<void> {
+  static async updateUIData(data: any): Promise<void> {
     try {
-      await AsyncStorage.setItem("uiUpdateData", JSON.stringify(data));
+      await AsyncStorage.setItem("any", JSON.stringify(data));
     } catch (error) {
       console.error("❌ Error updating UI data:", error);
     }
   }
 
-  static async getUIData(): Promise<UIUpdateData | null> {
+  static async getUIData(): Promise<any | null> {
     try {
-      const data = await AsyncStorage.getItem("uiUpdateData");
+      const data = await AsyncStorage.getItem("any");
       return data ? JSON.parse(data) : null;
     } catch (error) {
       console.error("❌ Error getting UI data:", error);

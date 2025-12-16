@@ -1,0 +1,166 @@
+import {useTheme} from "@/theme";
+import {ActivityIndicator, Alert, StyleSheet, TouchableOpacity, View} from "react-native";
+import {Text, TextInput} from "@/components/global";
+import {MaterialIcons} from "@expo/vector-icons";
+import React, {useMemo, useState} from "react";
+import {validateEmail} from "@/utils/auth";
+import {useAuth} from "@/contexts/AuthContext";
+import {IThemeColors} from "@/theme/types";
+
+interface ILoginFormProps {
+}
+
+const LoginForm = ({}: ILoginFormProps) => {
+  const {login, isLoading} = useAuth();
+  const {colors} = useTheme();
+
+  const [email, setEmail] = useState('');
+  const [password, setPassword] = useState('');
+  const [errors, setErrors] = useState<{ email?: string; password?: string }>({});
+  const [isSecurePassword, setIsSecurePassword] = useState(true);
+
+  const styles = useMemo(() => createStyles(colors), [colors]);
+
+  const handleLogin = async () => {
+    setErrors({});
+    const newErrors: { email?: string; password?: string } = {};
+    const trimmedPassword = password.trim();
+
+    if (!email) {
+      newErrors.email = 'Email is required';
+    } else if (!validateEmail(email)) {
+      newErrors.email = 'Please enter a valid email';
+    }
+
+    if (!trimmedPassword) {
+      newErrors.password = 'Password is required';
+    }
+
+    if (Object.keys(newErrors).length > 0) {
+      setErrors(newErrors);
+      return;
+    }
+
+    try {
+      const response = await login(email.trim().toLowerCase(), trimmedPassword);
+      if (response.status === 401) setErrors({
+        email: 'Invalid email or password',
+        password: 'Invalid email or password'
+      });
+    } catch (error: any) {
+      Alert.alert('Login Failed', error.message);
+    }
+  };
+
+  return (
+    <View style={styles.form}>
+      <View style={styles.inputContainer}>
+        <Text style={styles.label}>Email</Text>
+        <TextInput
+          style={[styles.input, errors.email && styles.inputError]}
+          placeholder="Enter your email"
+          value={email}
+          onChangeText={setEmail}
+          autoCapitalize="none"
+          keyboardType="email-address"
+          editable={!isLoading}
+          accessibilityLanguage={'en-US'}
+          maxLength={50}
+        />
+        {errors.email && <Text style={styles.errorText}>{errors.email}</Text>}
+      </View>
+
+      <View style={styles.inputContainer}>
+        <Text style={styles.label}>Password</Text>
+        <TextInput
+          style={[styles.input, errors.password && styles.inputError]}
+          placeholder="Enter your password"
+          placeholderTextColor={colors.background700}
+          value={password}
+          onChangeText={setPassword}
+          secureTextEntry={isSecurePassword}
+          editable={!isLoading}
+          accessibilityLanguage={'en-US'}
+          autoCapitalize='none'
+          maxLength={50}
+        />
+        <MaterialIcons name={isSecurePassword ? 'visibility' : 'visibility-off'} size={24} color={colors.text}
+                       onPress={() => setIsSecurePassword(!isSecurePassword)}
+                       style={styles.securePassword}
+        />
+        {errors.password && <Text style={styles.errorText}>{errors.password}</Text>}
+      </View>
+
+      <TouchableOpacity
+        style={[styles.button, isLoading && styles.buttonDisabled]}
+        onPress={handleLogin}
+        disabled={isLoading}
+      >
+        {isLoading ? (
+          <ActivityIndicator color="#ffffff"/>
+        ) : (
+          <Text style={styles.buttonText}>Sign In</Text>
+        )}
+      </TouchableOpacity>
+    </View>
+  )
+}
+
+export default LoginForm;
+
+const createStyles = (colors: IThemeColors) => StyleSheet.create({
+  form: {
+    marginBottom: 24,
+  },
+  inputContainer: {
+    marginBottom: 20,
+  },
+  label: {
+    fontSize: 14,
+    fontWeight: '600',
+    color: colors.text,
+    marginBottom: 8,
+    opacity: 0.8,
+  },
+  input: {
+    backgroundColor: colors.background700,
+    borderRadius: 12,
+    padding: 16,
+    fontSize: 16,
+    color: colors.text,
+    borderWidth: 1,
+    borderColor: colors.background700,
+  },
+  inputError: {
+    borderColor: '#ff4444',
+  },
+  errorText: {
+    color: '#ff4444',
+    fontSize: 12,
+    marginTop: 4,
+  },
+  button: {
+    backgroundColor: colors.primary,
+    borderRadius: 12,
+    padding: 16,
+    alignItems: 'center',
+    marginTop: 8,
+  },
+  buttonDisabled: {
+    opacity: 0.6,
+  },
+  buttonText: {
+    color: '#ffffff',
+    fontSize: 16,
+    fontWeight: 'bold',
+  },
+  link: {
+    color: colors.primary,
+    fontWeight: 'bold',
+  },
+  securePassword: {
+    position: 'absolute',
+    top: 42.5,
+    right: 17.5,
+  }
+})
