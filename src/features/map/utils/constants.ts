@@ -8,3 +8,7 @@ export const DEFAULT_REGION: IRegion = {
 }
 
 export const SAME_LOCATION_THRESHOLD = 0.05;
+
+// Default delta values for location regions (zoom level)
+export const DEFAULT_LATITUDE_DELTA = 0.01;
+export const DEFAULT_LONGITUDE_DELTA = 0.01;

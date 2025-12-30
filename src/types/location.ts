@@ -36,6 +36,7 @@ export interface IRegion {
   longitude: number;
   latitudeDelta: number;
   longitudeDelta: number;
+  timestamp?: number; // Optional timestamp for tracking when location was recorded
 }
 
 export interface IJournal {

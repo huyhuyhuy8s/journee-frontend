@@ -8,6 +8,7 @@ import {ASYNC_STORAGE_KEYS, STATE_INTERVALS} from "@/constants";
 import {isSameLocation} from "@/utils/location";
 import {journalApiService} from "@/services/api";
 import locationUpdateService from '@/services/locationUpdateService';
+import {DEFAULT_LATITUDE_DELTA, DEFAULT_LONGITUDE_DELTA} from "@/features/map/utils/constants";
 
 export const BACKGROUND_LOCATION_TASK = 'background-location-task';
 export const FOREGROUND_LOCATION_TASK = 'foreground-location-task';
@@ -175,8 +176,8 @@ TaskManager.defineTask(
         const currentLocation = {
           latitude: location.coords.latitude,
           longitude: location.coords.longitude,
-          latitudeDelta: 0.01,
-          longitudeDelta: 0.01,
+          latitudeDelta: DEFAULT_LATITUDE_DELTA,
+          longitudeDelta: DEFAULT_LONGITUDE_DELTA,
           timestamp: location.timestamp,
         };
 

@@ -45,11 +45,9 @@ export const ForegroundController: React.FC = () => {
   // Subscribe to location updates via event emitter (replaces 1s polling)
   useEffect(() => {
     const unsubscribe = locationUpdateService.onLocationUpdate((location) => {
-      setCurrentLocation({
-        latitude: location.latitude,
-        longitude: location.longitude,
-        timestamp: location.timestamp,
-      });
+      // Extract only the fields needed for display
+      const {latitude, longitude, timestamp} = location;
+      setCurrentLocation({latitude, longitude, timestamp: timestamp || Date.now()});
       setUpdateCount(prev => prev + 1);
     });
 

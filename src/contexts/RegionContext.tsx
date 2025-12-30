@@ -1,4 +1,4 @@
-import {createContext, Dispatch, ReactNode, SetStateAction, useContext, useEffect, useState} from "react";
+import {createContext, Dispatch, ReactNode, SetStateAction, useContext, useEffect, useRef, useState} from "react";
 import {DEFAULT_REGION} from "@/features/map/utils/constants";
 import {IRegion} from "@/types";
 import {isUndefined} from "lodash";
@@ -31,6 +31,12 @@ interface IRegionProviderProps {
 export const RegionProvider = (props: IRegionProviderProps) => {
   const [region, setRegion] = useState<IRegion>(DEFAULT_REGION)
   const [isLoading, setIsLoading] = useState<boolean>(false)
+  const regionRef = useRef<IRegion>(region);
+
+  // Keep ref in sync with state
+  useEffect(() => {
+    regionRef.current = region;
+  }, [region]);
 
   // Load initial location from AsyncStorage
   useEffect(() => {
@@ -56,9 +62,10 @@ export const RegionProvider = (props: IRegionProviderProps) => {
   // Subscribe to location updates via event emitter (replaces polling)
   useEffect(() => {
     const unsubscribe = locationUpdateService.onLocationUpdate((newLocation) => {
+      const currentRegion = regionRef.current;
       if (
-        Math.abs(newLocation.latitude - region.latitude) > 0.0001 ||
-        Math.abs(newLocation.longitude - region.longitude) > 0.0001
+        Math.abs(newLocation.latitude - currentRegion.latitude) > 0.0001 ||
+        Math.abs(newLocation.longitude - currentRegion.longitude) > 0.0001
       ) {
         setRegion(newLocation)
         console.log('🗺️ Updated region from location event');
@@ -66,7 +73,7 @@ export const RegionProvider = (props: IRegionProviderProps) => {
     });
 
     return unsubscribe;
-  }, [region]);
+  }, []);
 
   const value = {region, setRegion, isLoading, setIsLoading}
 
