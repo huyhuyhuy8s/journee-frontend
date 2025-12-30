@@ -7,6 +7,7 @@ import {EUserLocationState} from "@/types";
 import {ASYNC_STORAGE_KEYS, STATE_INTERVALS} from "@/constants";
 import {isSameLocation} from "@/utils/location";
 import {journalApiService} from "@/services/api";
+import locationUpdateService from '@/services/locationUpdateService';
 
 export const BACKGROUND_LOCATION_TASK = 'background-location-task';
 export const FOREGROUND_LOCATION_TASK = 'foreground-location-task';
@@ -171,13 +172,18 @@ TaskManager.defineTask(
       });
 
       try {
-        await AsyncStorage.setItem(CURRENT_LOCATION, JSON.stringify({
+        const currentLocation = {
           latitude: location.coords.latitude,
           longitude: location.coords.longitude,
           latitudeDelta: 0.01,
           longitudeDelta: 0.01,
           timestamp: location.timestamp,
-        }));
+        };
+
+        await AsyncStorage.setItem(CURRENT_LOCATION, JSON.stringify(currentLocation));
+
+        // Emit location update event to notify subscribers
+        locationUpdateService.notifyLocationUpdate(currentLocation);
 
         await userLocationStateService.addLocationToHistory(location)
 

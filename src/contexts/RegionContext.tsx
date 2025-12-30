@@ -4,6 +4,7 @@ import {IRegion} from "@/types";
 import {isUndefined} from "lodash";
 import {ASYNC_STORAGE_KEYS} from "@/constants";
 import AsyncStorage from "@react-native-async-storage/async-storage";
+import locationUpdateService from "@/services/locationUpdateService";
 
 const {CURRENT_LOCATION} = ASYNC_STORAGE_KEYS
 
@@ -31,30 +32,40 @@ export const RegionProvider = (props: IRegionProviderProps) => {
   const [region, setRegion] = useState<IRegion>(DEFAULT_REGION)
   const [isLoading, setIsLoading] = useState<boolean>(false)
 
+  // Load initial location from AsyncStorage
   useEffect(() => {
-    const interval = setInterval(async () => {
+    const loadInitialLocation = async () => {
       try {
         setIsLoading(true)
         const currentLocationStr = await AsyncStorage.getItem(CURRENT_LOCATION)
         if (currentLocationStr) {
           const currentLocation = JSON.parse(currentLocationStr)
-
-          if (
-            Math.abs(currentLocation.latitude - region.latitude) > 0.0001 ||
-            Math.abs(currentLocation.longitude - region.longitude) > 0.0001
-          ) {
-            setRegion(currentLocation)
-            console.log('🗺️ Updated region from foreground location');
-          }
+          setRegion(currentLocation)
+          console.log('🗺️ Loaded initial region from storage');
         }
       } catch (error) {
-        console.error('❌ Error polling location from storage:', error);
+        console.error('❌ Error loading initial location:', error);
       } finally {
         setIsLoading(false)
       }
-    }, 5000)
+    }
 
-    return () => clearInterval(interval)
+    loadInitialLocation()
+  }, []);
+
+  // Subscribe to location updates via event emitter (replaces polling)
+  useEffect(() => {
+    const unsubscribe = locationUpdateService.onLocationUpdate((newLocation) => {
+      if (
+        Math.abs(newLocation.latitude - region.latitude) > 0.0001 ||
+        Math.abs(newLocation.longitude - region.longitude) > 0.0001
+      ) {
+        setRegion(newLocation)
+        console.log('🗺️ Updated region from location event');
+      }
+    });
+
+    return unsubscribe;
   }, [region]);
 
   const value = {region, setRegion, isLoading, setIsLoading}

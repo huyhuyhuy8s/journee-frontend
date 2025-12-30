@@ -6,6 +6,7 @@ import {useTheme} from '@/theme';
 import {useLocationState} from '@/contexts/LocationStateContext';
 import {ASYNC_STORAGE_KEYS} from '@/constants';
 import {formatCoordinate} from '@/utils/location';
+import locationUpdateService from '@/services/locationUpdateService';
 
 const {CURRENT_LOCATION} = ASYNC_STORAGE_KEYS;
 
@@ -28,17 +29,31 @@ export const ForegroundController: React.FC = () => {
   const [currentLocation, setCurrentLocation] = useState<ICurrentLocation | null>(null);
   const [updateCount, setUpdateCount] = useState<number>(0);
 
+  // Load initial location from AsyncStorage
   useEffect(() => {
-    const interval = setInterval(async () => {
+    const loadInitialLocation = async () => {
       const locationJson = await AsyncStorage.getItem(CURRENT_LOCATION);
       if (locationJson) {
         const location = JSON.parse(locationJson);
         setCurrentLocation(location);
-        setUpdateCount(prev => prev + 1);
       }
-    }, 1000);
+    };
 
-    return () => clearInterval(interval);
+    loadInitialLocation();
+  }, []);
+
+  // Subscribe to location updates via event emitter (replaces 1s polling)
+  useEffect(() => {
+    const unsubscribe = locationUpdateService.onLocationUpdate((location) => {
+      setCurrentLocation({
+        latitude: location.latitude,
+        longitude: location.longitude,
+        timestamp: location.timestamp,
+      });
+      setUpdateCount(prev => prev + 1);
+    });
+
+    return unsubscribe;
   }, []);
 
   const handleToggleTracking = async (): Promise<void> => {
