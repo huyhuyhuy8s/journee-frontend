@@ -1,5 +1,5 @@
 import {createContext, Dispatch, ReactNode, SetStateAction, useContext, useEffect, useRef, useState} from "react";
-import {DEFAULT_REGION} from "@/features/map/utils/constants";
+import {DEFAULT_REGION, REGION_UPDATE_THRESHOLD} from "@/features/map/utils/constants";
 import {IRegion} from "@/types";
 import {isUndefined} from "lodash";
 import {ASYNC_STORAGE_KEYS} from "@/constants";
@@ -64,8 +64,8 @@ export const RegionProvider = (props: IRegionProviderProps) => {
     const unsubscribe = locationUpdateService.onLocationUpdate((newLocation) => {
       const currentRegion = regionRef.current;
       if (
-        Math.abs(newLocation.latitude - currentRegion.latitude) > 0.0001 ||
-        Math.abs(newLocation.longitude - currentRegion.longitude) > 0.0001
+        Math.abs(newLocation.latitude - currentRegion.latitude) > REGION_UPDATE_THRESHOLD ||
+        Math.abs(newLocation.longitude - currentRegion.longitude) > REGION_UPDATE_THRESHOLD
       ) {
         setRegion(newLocation)
         console.log('🗺️ Updated region from location event');
