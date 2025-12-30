@@ -46,6 +46,7 @@ export const RegionProvider = (props: IRegionProviderProps) => {
         const currentLocationStr = await AsyncStorage.getItem(CURRENT_LOCATION)
         if (currentLocationStr) {
           const currentLocation = JSON.parse(currentLocationStr)
+          // Always set initial location without threshold check to ensure map initializes properly
           setRegion(currentLocation)
           console.log('🗺️ Loaded initial region from storage');
         }

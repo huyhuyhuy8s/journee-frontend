@@ -173,7 +173,7 @@ TaskManager.defineTask(
       });
 
       try {
-        const currentLocation = {
+        const currentLocation: IRegion = {
           latitude: location.coords.latitude,
           longitude: location.coords.longitude,
           latitudeDelta: DEFAULT_LATITUDE_DELTA,

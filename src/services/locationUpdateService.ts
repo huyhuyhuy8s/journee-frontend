@@ -29,7 +29,7 @@ class LocationUpdateService {
       try {
         listener(location);
       } catch (error) {
-        console.error('❌ Error in location update listener:', error);
+        console.error('Error in location update listener:', error);
       }
     });
   }
