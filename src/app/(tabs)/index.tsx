@@ -1,14 +1,22 @@
-import {StyleSheet} from "react-native";
-import {useTheme} from "@/theme";
-import SafeAreaView from '@/components/global/SafeAreaView'
+import {StyleSheet, View} from "react-native";
+import {MapViewComponent, RegionComponent} from "@/features/map/components";
 
 const Map = () => {
-  const {colors} = useTheme()
-  const styles = StyleSheet.create({})
+  const styles = StyleSheet.create({
+    mapItems: {
+      position: 'absolute',
+      top: 50,
+      left: 0,
+    }
+  })
 
   return (
-    <SafeAreaView>
-    </SafeAreaView>
+    <View>
+      <MapViewComponent/>
+      <View style={styles.mapItems}>
+        <RegionComponent/>
+      </View>
+    </View>
   )
 }
 
