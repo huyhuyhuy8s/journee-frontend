@@ -1,18 +1,15 @@
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import * as SecureStore from 'expo-secure-store';
+import {ASYNC_STORAGE_KEYS, STORAGE_KEYS} from "@/constants/global";
 
-const AUTH_TOKEN_KEY = "auth_token";
-const USER_DATA_KEY = "user_data";
+const {AUTH_TOKEN} = STORAGE_KEYS;
+const {
+  USER_DATA: ASYNC_USER_DATA,
+} = ASYNC_STORAGE_KEYS;
 
 export const getAuthToken = async (): Promise<string | null> => {
   try {
-    // Try SecureStore first
-    const token = await SecureStore.getItemAsync(AUTH_TOKEN_KEY);
-    if (token) return token;
-
-    // Fallback to AsyncStorage
-    const fallbackToken = await AsyncStorage.getItem('authToken');
-    return fallbackToken;
+    return await SecureStore.getItemAsync(AUTH_TOKEN);
   } catch (error) {
     console.error('Error getting auth token:', error);
     return null;
@@ -26,7 +23,7 @@ export const isAuthenticated = async (): Promise<boolean> => {
 
 export const getUserData = async () => {
   try {
-    const userData = await AsyncStorage.getItem(USER_DATA_KEY);
+    const userData = await AsyncStorage.getItem(ASYNC_USER_DATA);
     return userData ? JSON.parse(userData) : null;
   } catch (error) {
     console.error('Error getting user data:', error);
@@ -36,11 +33,8 @@ export const getUserData = async () => {
 
 export const clearAuthData = async (): Promise<void> => {
   try {
-    await SecureStore.deleteItemAsync(AUTH_TOKEN_KEY);
-    await AsyncStorage.removeItem(USER_DATA_KEY);
-    await AsyncStorage.removeItem('authToken');
-    await AsyncStorage.removeItem('backgroundAuthToken');
-    await AsyncStorage.removeItem('userToken');
+    await SecureStore.deleteItemAsync(AUTH_TOKEN);
+    await AsyncStorage.removeItem(ASYNC_USER_DATA);
   } catch (error) {
     console.error('Error clearing auth data:', error);
   }

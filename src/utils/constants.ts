@@ -1,1 +1,0 @@
-export const DEFAULT_BACKEND_RESPONSE = {status: 100, message: '', error: ''}

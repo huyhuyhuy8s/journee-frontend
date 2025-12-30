@@ -1,7 +1,10 @@
 import axios, {AxiosError, AxiosInstance, AxiosResponse, InternalAxiosRequestConfig} from 'axios';
 import {config} from "@/config/env";
 import * as SecureStore from 'expo-secure-store';
-import {BackendResponseError} from "@/types";
+import {STORAGE_KEYS} from '@/constants/global';
+import {IBackendResponseError} from "@/types";
+
+const {AUTH_TOKEN} = STORAGE_KEYS
 
 const apiClient: AxiosInstance = axios.create({
   baseURL: `${config.BACKEND_URL}/api`,
@@ -13,7 +16,7 @@ const apiClient: AxiosInstance = axios.create({
 
 apiClient.interceptors.request.use(
   async (config: InternalAxiosRequestConfig) => {
-    const token = await SecureStore.getItemAsync('authToken');
+    const token = await SecureStore.getItemAsync(AUTH_TOKEN);
     if (token && config.headers) {
       config.headers.Authorization = `Bearer ${token}`;
     }
@@ -32,13 +35,13 @@ apiClient.interceptors.response.use(
     console.log('Response:', response.status, response.config.url);
     return response;
   },
-  async (error: AxiosError<BackendResponseError>) => {
+  async (error: AxiosError<IBackendResponseError>) => {
     if (error.response) {
       const {status} = error.response;
 
       switch (status) {
         case 401:
-          await SecureStore.deleteItemAsync('authToken');
+          await SecureStore.deleteItemAsync(AUTH_TOKEN);
           break;
         case 403:
           console.error('Access forbidden');
@@ -57,7 +60,7 @@ apiClient.interceptors.response.use(
 
     const response = error.response;
     if (!response) return Promise.reject(error);
-    
+
     return Promise.reject({
       status: response.status,
       message: response.data.meta.message,

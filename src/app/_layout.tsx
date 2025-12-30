@@ -7,20 +7,23 @@ import {initialWindowMetrics, SafeAreaProvider} from "react-native-safe-area-con
 import {ThemeProvider} from "@/theme";
 import {AuthProvider, useAuth} from "@/contexts/AuthContext";
 import {useAuthMiddleware} from "@/middleware/authMiddleware";
+import {LocationStateProvider} from "@/contexts/LocationStateContext";
+import {RegionProvider} from "@/contexts/RegionContext";
 
-SplashScreen.preventAutoHideAsync();
+SplashScreen.preventAutoHideAsync().then();
 
 const RootLayoutNav = () => {
   useAuthMiddleware();
-  const {isAuthenticated} = useAuth()
+  const {isAuthenticated, isLoading} = useAuth()
+
+  if (isLoading) {
+    return null;
+  }
 
   return (
     <Stack>
       <Stack.Protected guard={isAuthenticated}>
         <Stack.Screen name="(tabs)" options={{headerShown: false}}/>
-      </Stack.Protected>
-      <Stack.Protected guard={isAuthenticated}>
-        <Stack.Screen name="users/[userId]" options={{headerShown: false}}/>
       </Stack.Protected>
       <Stack.Protected guard={!isAuthenticated}>
         <Stack.Screen name="(auth)" options={{headerShown: false}}/>
@@ -48,10 +51,14 @@ const RootLayout = () => {
   return (
     <ThemeProvider>
       <AuthProvider>
-        <SafeAreaProvider initialMetrics={initialWindowMetrics}>
-          <StatusBar style="auto" animated/>
-          <RootLayoutNav/>
-        </SafeAreaProvider>
+        <LocationStateProvider>
+          <RegionProvider>
+            <SafeAreaProvider initialMetrics={initialWindowMetrics}>
+              <StatusBar style="auto" animated/>
+              <RootLayoutNav/>
+            </SafeAreaProvider>
+          </RegionProvider>
+        </LocationStateProvider>
       </AuthProvider>
     </ThemeProvider>
   );
