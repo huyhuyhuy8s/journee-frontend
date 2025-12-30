@@ -15,7 +15,7 @@ export const LogoutButton: React.FC<LogoutButtonProps> = ({
                                                             variant = 'primary'
                                                           }) => {
   const {logout, isLoading} = useAuth();
-  const {colors, isDark} = useTheme();
+  const {isDark} = useTheme();
 
   const handleLogout = () => {
     Alert.alert(
