@@ -3,8 +3,7 @@ import * as Location from 'expo-location';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import userLocationStateService from '@/services/userLocationStateService';
 import journalService from '@/services/journalService';
-import {EUserLocationState} from "@/types";
-import {ASYNC_STORAGE_KEYS, STATE_INTERVALS} from "@/constants";
+import {ASYNC_STORAGE_KEYS, EUserLocationState, STATE_INTERVALS} from "@/constants";
 import {isSameLocation} from "@/utils/location";
 import {journalApiService} from "@/services/api";
 

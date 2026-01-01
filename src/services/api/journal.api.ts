@@ -156,7 +156,7 @@ export class JournalApiService {
         value,
       }
     );
-    console.log('response update service', response.data)
+    console.log('response update service', response.data.meta.message)
     return response.data.results!;
   };
 

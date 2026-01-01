@@ -57,3 +57,8 @@ const getTodayDateString = (): string => {
 }
 
 export {calculateDistance, toRad, isSameLocation, generateId, formatInterval, formatCoordinate, getTodayDateString}
+
+export const REGION_UPDATE_THRESHOLD = {
+  latitudeDelta: 0.005,
+  longitudeDelta: 0.005
+};

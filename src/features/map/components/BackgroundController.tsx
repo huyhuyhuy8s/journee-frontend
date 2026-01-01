@@ -3,9 +3,9 @@ import {StyleSheet, View} from 'react-native';
 import {Badge, Button, Card, Text} from '@/components/global';
 import {useTheme} from '@/theme';
 import {useLocationState} from '@/contexts/LocationStateContext';
-import {EUserLocationState} from '@/types/location';
 import journalService from '@/services/journalService';
 import {formatInterval} from '@/utils/location';
+import {EUserLocationState} from "@/constants";
 
 const {FAST_MOVING, SLOW_MOVING, STATIONARY} = EUserLocationState
 
