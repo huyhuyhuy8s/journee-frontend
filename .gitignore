@@ -43,3 +43,6 @@ yarn-error.*
 /android
 
 test.json
+
+# Webstorm
+.idea/
