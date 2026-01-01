@@ -2,7 +2,7 @@ import axios, {AxiosError, AxiosInstance, AxiosResponse, InternalAxiosRequestCon
 import {config} from "@/config/env";
 import * as SecureStore from 'expo-secure-store';
 import {STORAGE_KEYS} from '@/constants/global';
-import {IBackendResponseError} from "@/types";
+import {IResponseError} from "@/types";
 
 const {AUTH_TOKEN} = STORAGE_KEYS
 
@@ -35,7 +35,7 @@ apiClient.interceptors.response.use(
     console.log('Response:', response.status, response.config.url);
     return response;
   },
-  async (error: AxiosError<IBackendResponseError>) => {
+  async (error: AxiosError<IResponseError>) => {
     if (error.response) {
       const {status} = error.response;
 

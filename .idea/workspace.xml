@@ -4,87 +4,31 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="8c440c9e-2580-4003-ad70-36ea03302383" name="Changes" comment="Refactor date helper methods to support timezone adjustments and improve user controller with deactivate user functionality">
-      <change afterPath="$PROJECT_DIR$/src/app/(tabs)/user/_layout.tsx" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/app/(tabs)/user/index.tsx" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/app/(tabs)/user/settings/_layout.tsx" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/app/(tabs)/user/settings/index.tsx" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/components/global/Badge/index.tsx" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/components/global/Badge/types.ts" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/components/global/Button/index.tsx" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/components/global/Button/types.ts" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/components/global/Card/index.tsx" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/components/global/Card/types.ts" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/constants/global.ts" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/constants/index.ts" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/constants/locations.ts" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/contexts/LocationStateContext.tsx" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/contexts/RegionContext.tsx" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/features/map/components/BackgroundController.tsx" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/features/map/components/ForegroundController.tsx" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/features/map/components/MapViewComponent.tsx" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/features/map/components/RegionComponent.tsx" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/features/map/components/index.ts" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/features/map/task.ts" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/features/map/utils/constants.ts" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/features/map/utils/mapStyles.ts" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/features/users/components/SettingComponents.tsx" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/services/api/auth.api.ts" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/services/api/index.ts" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/services/api/journal.api.ts" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/services/api/post.api.ts" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/services/journalService.ts" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/services/userLocationStateService.ts" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/types/location.ts" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/utils/location.ts" afterDir="false" />
+    <list default="true" id="8c440c9e-2580-4003-ad70-36ea03302383" name="Changes" comment="Implement location tracking system with foreground and background services, including state management and journal entry creation">
+      <change afterPath="$PROJECT_DIR$/src/services/authService.ts" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/types/models/journal.ts" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/types/models/location.ts" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/types/models/message.ts" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/types/models/post.ts" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/types/models/user.ts" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/vcs.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/vcs.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/app/(tabs)/index.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/src/app/(tabs)/index.tsx" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/app/(tabs)/user.tsx" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/app/_layout.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/src/app/_layout.tsx" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/app/users/[userId].tsx" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/components/MapOld/components/AddressDisplay.tsx" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/components/MapOld/components/BackendSyncIndicator.tsx" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/components/MapOld/components/ErrorMessage.tsx" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/components/MapOld/components/LocationDisplay.tsx" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/components/MapOld/components/MapView.tsx" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/components/MapOld/components/MovementStateIndicator.tsx" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/components/MapOld/components/TrackingButton.tsx" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/components/MapOld/components/VisitIndicator.tsx" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/components/MapOld/hooks/useBackgroundTracking.ts" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/components/MapOld/hooks/useLocationPermissions.ts" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/components/MapOld/hooks/useLocationTracking.ts" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/components/MapOld/hooks/useMovementState.ts" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/components/MapOld/index.tsx" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/components/MapOld/services/backgroundTaskService.ts" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/components/MapOld/services/locationService.ts" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/components/MapOld/services/storageService.ts" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/components/MapOld/utils/constants.ts" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/components/MapOld/utils/locationUtils.ts" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/components/MapOld/utils/movementStateUtils.ts" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/components/MapOld/utils/types.ts" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/components/MapOld/utils/validators.ts" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/components/auth/AuthComponents.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/src/features/users/components/AuthComponents.tsx" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/components/global/Text/index.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/src/components/global/Text/index.tsx" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/components/global/index.ts" beforeDir="false" afterPath="$PROJECT_DIR$/src/components/global/index.ts" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/components/newsfeed/Filter.tsx" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/components/newsfeed/StatusBar.tsx" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/components/profile/LargeButton.tsx" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/config/routes.ts" beforeDir="false" afterPath="$PROJECT_DIR$/src/constants/backend.ts" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/constants/index.ts" beforeDir="false" afterPath="$PROJECT_DIR$/src/constants/index.ts" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/constants/locations.ts" beforeDir="false" afterPath="$PROJECT_DIR$/src/constants/location.ts" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/contexts/AuthContext.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/src/contexts/AuthContext.tsx" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/examples/authExamples.ts" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/examples/index copy.tsx" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/services/backendApiServices.ts" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/services/backgroundLocationService.ts" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/services/geocodingService.ts" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/services/user.ts" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/services/visitDetectionService.ts" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/theme/colors.ts" beforeDir="false" afterPath="$PROJECT_DIR$/src/theme/colors.ts" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/contexts/LocationStateContext.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/src/contexts/LocationStateContext.tsx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/contexts/RegionContext.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/src/contexts/RegionContext.tsx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/features/map/components/BackgroundController.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/src/features/map/components/BackgroundController.tsx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/features/map/task.ts" beforeDir="false" afterPath="$PROJECT_DIR$/src/features/map/task.ts" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/services/api/auth.api.ts" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/services/api/journal.api.ts" beforeDir="false" afterPath="$PROJECT_DIR$/src/services/api/journal.api.ts" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/services/userLocationStateService.ts" beforeDir="false" afterPath="$PROJECT_DIR$/src/services/userLocationStateService.ts" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/types/index.ts" beforeDir="false" afterPath="$PROJECT_DIR$/src/types/index.ts" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/types/response.ts" beforeDir="false" afterPath="$PROJECT_DIR$/src/types/response.ts" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/types/tamagui.d.ts" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/types/location.ts" beforeDir="false" afterPath="$PROJECT_DIR$/src/types/location.ts" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/types/response.ts" beforeDir="false" afterPath="$PROJECT_DIR$/src/types/models/response.ts" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/utils/apiClient.ts" beforeDir="false" afterPath="$PROJECT_DIR$/src/utils/apiClient.ts" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/utils/auth.ts" beforeDir="false" afterPath="$PROJECT_DIR$/src/utils/auth.ts" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/utils/constants.ts" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/utils/old-themes.ts" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/utils/location.ts" beforeDir="false" afterPath="$PROJECT_DIR$/src/utils/location.ts" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -92,14 +36,14 @@
     <option name="LAST_RESOLUTION" value="IGNORE" />
   </component>
   <component name="EmbeddingIndexingInfo">
-    <option name="cachedIndexableFilesCount" value="319" />
+    <option name="cachedIndexableFilesCount" value="216" />
     <option name="fileBasedEmbeddingIndicesEnabled" value="true" />
   </component>
   <component name="FileTemplateManagerImpl">
     <option name="RECENT_TEMPLATES">
       <list>
-        <option value="TypeScript File" />
         <option value="TypeScript JSX File" />
+        <option value="TypeScript File" />
       </list>
     </option>
   </component>
@@ -110,6 +54,18 @@
     <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$" />
     <option name="ROOT_SYNC" value="DONT_SYNC" />
   </component>
+  <component name="GitHubPullRequestSearchHistory">{
+  &quot;lastFilter&quot;: {
+    &quot;state&quot;: &quot;OPEN&quot;,
+    &quot;assignee&quot;: &quot;huyhuyhuy8s&quot;
+  }
+}</component>
+  <component name="GithubPullRequestsUISettings">{
+  &quot;selectedUrlAndAccountId&quot;: {
+    &quot;url&quot;: &quot;https://github.com/huyhuyhuy8s/journee-frontend.git&quot;,
+    &quot;accountId&quot;: &quot;e278c73b-f441-444a-9c6a-cea23eded5f8&quot;
+  }
+}</component>
   <component name="McpProjectServerCommands">
     <commands />
     <urls />
@@ -139,7 +95,7 @@
     &quot;RunOnceActivity.typescript.service.memoryLimit.init&quot;: &quot;true&quot;,
     &quot;code.cleanup.on.save&quot;: &quot;true&quot;,
     &quot;com.intellij.ml.llm.matterhorn.ej.ui.settings.DefaultModelSelectionForGA.v1&quot;: &quot;true&quot;,
-    &quot;git-widget-placeholder&quot;: &quot;map-tab&quot;,
+    &quot;git-widget-placeholder&quot;: &quot;#2 on map-tab&quot;,
     &quot;ignore.virus.scanning.warn.message&quot;: &quot;true&quot;,
     &quot;javascript.preferred.runtime.type.id&quot;: &quot;node&quot;,
     &quot;junie.onboarding.icon.badge.shown&quot;: &quot;true&quot;,
@@ -177,10 +133,18 @@
       <recent name="D:\Projects\Journee\journee-backend\etc\secrets" />
     </key>
     <key name="MoveFile.RECENT_KEYS">
+      <recent name="D:\Projects\Journee\journee-frontend\src\types\models" />
       <recent name="D:\Projects\Journee\journee-frontend\src\features\users\components" />
       <recent name="D:\Projects\Journee\journee-frontend\src\features\auth\components" />
       <recent name="D:\Projects\Journee\journee-frontend\src\constants" />
       <recent name="D:\Projects\Journee\journee-frontend\src\app\(auth)" />
+    </key>
+    <key name="es6.move.members.recent.items">
+      <recent name="D:\Projects\Journee\journee-frontend\src\types\models\user.ts" />
+      <recent name="D:\Projects\Journee\journee-frontend\src\constants\location.ts" />
+      <recent name="D:\Projects\Journee\journee-frontend\src\types\models\message.ts" />
+      <recent name="D:\Projects\Journee\journee-frontend\src\types\models\post.ts" />
+      <recent name="D:\Projects\Journee\journee-frontend\src\types\models\location.ts" />
     </key>
   </component>
   <component name="SharedIndexes">
@@ -220,7 +184,11 @@
       <workItem from="1766824931106" duration="8725000" />
       <workItem from="1766892175939" duration="19043000" />
       <workItem from="1766993072522" duration="5880000" />
-      <workItem from="1767066790524" duration="1311000" />
+      <workItem from="1767066790524" duration="9072000" />
+      <workItem from="1767093184293" duration="593000" />
+      <workItem from="1767151435447" duration="3701000" />
+      <workItem from="1767191565251" duration="889000" />
+      <workItem from="1767233051307" duration="1113000" />
     </task>
     <task id="LOCAL-00001" summary="feat: completed register, login, logout (without styling).">
       <option name="closed" value="true" />
@@ -270,7 +238,23 @@
       <option name="project" value="LOCAL" />
       <updated>1766993563802</updated>
     </task>
-    <option name="localTasksCounter" value="7" />
+    <task id="LOCAL-00007" summary="Add map and settings components with context for region management">
+      <option name="closed" value="true" />
+      <created>1767070188306</created>
+      <option name="number" value="00007" />
+      <option name="presentableId" value="LOCAL-00007" />
+      <option name="project" value="LOCAL" />
+      <updated>1767070188306</updated>
+    </task>
+    <task id="LOCAL-00008" summary="Implement location tracking system with foreground and background services, including state management and journal entry creation">
+      <option name="closed" value="true" />
+      <created>1767070250929</created>
+      <option name="number" value="00008" />
+      <option name="presentableId" value="LOCAL-00008" />
+      <option name="project" value="LOCAL" />
+      <updated>1767070250929</updated>
+    </task>
+    <option name="localTasksCounter" value="9" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
@@ -283,7 +267,9 @@
     <MESSAGE value="Improve error handling and formatting in location controller" />
     <MESSAGE value="Fix formatting issues and improve error messages in environment and journal service files" />
     <MESSAGE value="Refactor date helper methods to support timezone adjustments and improve user controller with deactivate user functionality" />
-    <option name="LAST_COMMIT_MESSAGE" value="Refactor date helper methods to support timezone adjustments and improve user controller with deactivate user functionality" />
+    <MESSAGE value="Add map and settings components with context for region management" />
+    <MESSAGE value="Implement location tracking system with foreground and background services, including state management and journal entry creation" />
+    <option name="LAST_COMMIT_MESSAGE" value="Implement location tracking system with foreground and background services, including state management and journal entry creation" />
   </component>
   <component name="github-copilot-workspace">
     <instructionFileLocations>

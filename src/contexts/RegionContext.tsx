@@ -4,6 +4,7 @@ import {IRegion} from "@/types";
 import {isUndefined} from "lodash";
 import {ASYNC_STORAGE_KEYS} from "@/constants";
 import AsyncStorage from "@react-native-async-storage/async-storage";
+import {REGION_UPDATE_THRESHOLD} from "@/utils/location";
 
 const {CURRENT_LOCATION} = ASYNC_STORAGE_KEYS
 
@@ -40,8 +41,8 @@ export const RegionProvider = (props: IRegionProviderProps) => {
           const currentLocation = JSON.parse(currentLocationStr)
 
           if (
-            Math.abs(currentLocation.latitude - region.latitude) > 0.0001 ||
-            Math.abs(currentLocation.longitude - region.longitude) > 0.0001
+            Math.abs(currentLocation.latitude - region.latitude) > REGION_UPDATE_THRESHOLD.latitudeDelta ||
+            Math.abs(currentLocation.longitude - region.longitude) > REGION_UPDATE_THRESHOLD.longitudeDelta
           ) {
             setRegion(currentLocation)
             console.log('🗺️ Updated region from foreground location');

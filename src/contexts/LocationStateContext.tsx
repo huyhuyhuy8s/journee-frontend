@@ -4,8 +4,7 @@ import * as TaskManager from 'expo-task-manager';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import {AppState, AppStateStatus} from 'react-native';
 import userLocationStateService from '@/services/userLocationStateService';
-import {ASYNC_STORAGE_KEYS, STATE_INTERVALS} from '@/constants';
-import {EUserLocationState} from '@/types/location';
+import {ASYNC_STORAGE_KEYS, EUserLocationState, STATE_INTERVALS} from '@/constants';
 import {BACKGROUND_LOCATION_TASK, FOREGROUND_LOCATION_TASK} from "@/features/map/task";
 
 const {LOCATION_STATE_CHANGED} = ASYNC_STORAGE_KEYS;

@@ -1,11 +1,15 @@
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import * as Location from 'expo-location';
-import {EUserLocationState, ILocationHistoryItem, IStateTransitionResult} from '@/types/location';
-import {ASYNC_STORAGE_KEYS, MAX_HISTORY_SIZE, STATE_TRANSITION_THRESHOLDS} from '@/constants';
+import {ILocationHistoryItem, IStateTransitionResult} from '@/types/location';
+import {ASYNC_STORAGE_KEYS, EUserLocationState, MAX_HISTORY_SIZE, STATE_TRANSITION_THRESHOLDS} from '@/constants';
 import {calculateDistance} from '@/utils/location';
 
 const {STATE, HISTORY, LAST_LOCATION} = ASYNC_STORAGE_KEYS;
-const {STATIONARY, SLOW_MOVING, FAST_MOVING} = EUserLocationState
+const {STATIONARY, SLOW_MOVING, FAST_MOVING} = EUserLocationState;
+const {
+  SLOW_MOVING: THRESHOLDS_SLOW_MOVING,
+  FAST_MOVING: THRESHOLDS_FAST_MOVING,
+} = STATE_TRANSITION_THRESHOLDS;
 
 class UserLocationStateService {
   private static instance: UserLocationStateService;
@@ -66,7 +70,7 @@ class UserLocationStateService {
   };
 
   determineState = async (
-    currentLocation: Location.LocationObject
+    currentLocation: Location.LocationObject,
   ): Promise<IStateTransitionResult> => {
     try {
       await this.addLocationToHistory(currentLocation);
@@ -88,9 +92,9 @@ class UserLocationStateService {
 
       switch (currentState) {
         case FAST_MOVING:
-          if (velocity >= STATE_TRANSITION_THRESHOLDS.FAST_MOVING.VELOCITY) {
+          if (velocity >= THRESHOLDS_FAST_MOVING.VELOCITY) {
             newState = FAST_MOVING;
-          } else if (velocity >= STATE_TRANSITION_THRESHOLDS.SLOW_MOVING.VELOCITY) {
+          } else if (velocity >= THRESHOLDS_SLOW_MOVING.VELOCITY) {
             newState = SLOW_MOVING;
           } else {
             newState = STATIONARY;
@@ -103,12 +107,12 @@ class UserLocationStateService {
               lastLocation.latitude,
               lastLocation.longitude,
               currentLocation.coords.latitude,
-              currentLocation.coords.longitude
+              currentLocation.coords.longitude,
             );
 
-            if (distance >= STATE_TRANSITION_THRESHOLDS.FAST_MOVING.DISTANCE) {
+            if (distance >= THRESHOLDS_FAST_MOVING.DISTANCE_30_MINUTES) {
               newState = FAST_MOVING;
-            } else if (distance >= STATE_TRANSITION_THRESHOLDS.SLOW_MOVING.DISTANCE) {
+            } else if (distance >= THRESHOLDS_SLOW_MOVING.DISTANCE_30_MINUTES) {
               newState = SLOW_MOVING;
             } else {
               newState = STATIONARY;
@@ -127,7 +131,7 @@ class UserLocationStateService {
               lastLocation.latitude,
               lastLocation.longitude,
               currentLocation.coords.latitude,
-              currentLocation.coords.longitude
+              currentLocation.coords.longitude,
             );
 
             if (distance >= STATE_TRANSITION_THRESHOLDS.FAST_MOVING.VELOCITY) {
@@ -149,7 +153,7 @@ class UserLocationStateService {
           lastLocation.latitude,
           lastLocation.longitude,
           currentLocation.coords.latitude,
-          currentLocation.coords.longitude
+          currentLocation.coords.longitude,
         )
         : undefined;
 
@@ -229,7 +233,7 @@ class UserLocationStateService {
       oldest.latitude,
       oldest.longitude,
       newest.latitude,
-      newest.longitude
+      newest.longitude,
     );
 
     const timeInHours = (newest.timestamp - oldest.timestamp) / (1000 * 60 * 60);

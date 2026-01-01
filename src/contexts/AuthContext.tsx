@@ -1,5 +1,5 @@
 import {createContext, ReactNode, useContext, useEffect, useState} from "react";
-import {IBackendResponse, IBackendResponseError, IUser} from "@/types";
+import {IResponse, IResponseError, IUser} from "@/types";
 import * as SecureStore from 'expo-secure-store';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import {AxiosError} from "axios";
@@ -15,9 +15,9 @@ interface IUserContext {
   user: IUser | null;
   isAuthenticated: boolean;
   isLoading: boolean;
-  login: (email: string, password: string) => Promise<IBackendResponse>;
-  register: (name: string, email: string, password: string, avatar?: string) => Promise<IBackendResponse>;
-  logout: () => Promise<IBackendResponse>;
+  login: (email: string, password: string) => Promise<IResponse>;
+  register: (name: string, email: string, password: string, avatar?: string) => Promise<IResponse>;
+  logout: () => Promise<IResponse>;
 }
 
 const AuthContext = createContext<IUserContext>({
@@ -55,10 +55,10 @@ export const AuthProvider = (props: IAuthProviderProps) => {
       }
     };
 
-    loadStoredData();
+    loadStoredData().then();
   }, []);
 
-  const login = async (email: string, password: string): Promise<IBackendResponse> => {
+  const login = async (email: string, password: string): Promise<IResponse> => {
     setIsLoading(true);
     try {
       const response = await apiClient.post('/users/login', {email, password})
@@ -82,7 +82,7 @@ export const AuthProvider = (props: IAuthProviderProps) => {
         status: meta.status,
         message: meta.message
       }
-    } catch (error: AxiosError<IBackendResponseError> | any) {
+    } catch (error: AxiosError<IResponseError> | any) {
       ToastAndroid.show(`Error when logging ${error.status}: ${error.error}, ${error.message}`, ToastAndroid.LONG);
       return error
     } finally {
@@ -90,7 +90,7 @@ export const AuthProvider = (props: IAuthProviderProps) => {
     }
   }
 
-  const register = async (name: string, email: string, password: string, avatar?: string): Promise<IBackendResponse> => {
+  const register = async (name: string, email: string, password: string, avatar?: string): Promise<IResponse> => {
     setIsLoading(true);
     try {
       const response = await apiClient.post('/users/register', {name, email, password, avatar});

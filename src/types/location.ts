@@ -1,21 +1,7 @@
 import {Timestamp} from "@firebase/firestore";
-import {ILocation} from "@/types/response";
 import * as Location from 'expo-location';
-
-export enum EUserLocationState {
-  FAST_MOVING = "FAST_MOVING",
-  SLOW_MOVING = "SLOW_MOVING",
-  STATIONARY = "STATIONARY",
-}
-
-export interface IUserLocationState {
-  id?: string;
-  userId: string;
-  currentState: EUserLocationState;
-  lastLocation: ILocation;
-  createdAt: Timestamp | Date;
-  updatedAt: Timestamp | Date;
-}
+import {ILocation} from "@/types/models/location";
+import {EUserLocationState} from "@/constants";
 
 export interface ILocationHistoryItem {
   latitude: number;

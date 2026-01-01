@@ -1,2 +1,3 @@
 export * from './global'
-export * from './locations'
+export * from './location'
+export * from './backend'
