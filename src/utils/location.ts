@@ -1,4 +1,4 @@
-import {SAME_LOCATION_THRESHOLD} from "@/features/map/utils/constants";
+import { SAME_LOCATION_THRESHOLD } from '@/features/map/utils/constants';
 
 const calculateDistance = (
   lat1: number,
@@ -13,17 +13,17 @@ const calculateDistance = (
   const a =
     Math.sin(dLat / 2) * Math.sin(dLat / 2) +
     Math.cos(toRad(lat1)) *
-    Math.cos(toRad(lat2)) *
-    Math.sin(dLon / 2) *
-    Math.sin(dLon / 2);
+      Math.cos(toRad(lat2)) *
+      Math.sin(dLon / 2) *
+      Math.sin(dLon / 2);
 
   const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
   return R * c;
-}
+};
 
 const toRad = (degrees: number): number => {
   return degrees * (Math.PI / 180);
-}
+};
 
 const isSameLocation = (
   lat1: number,
@@ -33,7 +33,7 @@ const isSameLocation = (
 ): boolean => {
   const distance = calculateDistance(lat1, lon1, lat2, lon2);
   return distance < SAME_LOCATION_THRESHOLD;
-}
+};
 
 const formatInterval = (ms: number): string => {
   if (ms < 60000) {
@@ -50,15 +50,23 @@ const formatCoordinate = (number: number) => number; // "10.762622"
 
 const generateId = (): string => {
   return `${Date.now()}_${Math.random().toString(36).slice(2, 11)}`;
-}
+};
 const getTodayDateString = (): string => {
   const today = new Date();
   return today.toISOString().split('T')[0];
-}
+};
 
-export {calculateDistance, toRad, isSameLocation, generateId, formatInterval, formatCoordinate, getTodayDateString}
+export {
+  calculateDistance,
+  toRad,
+  isSameLocation,
+  generateId,
+  formatInterval,
+  formatCoordinate,
+  getTodayDateString,
+};
 
 export const REGION_UPDATE_THRESHOLD = {
   latitudeDelta: 0.005,
-  longitudeDelta: 0.005
+  longitudeDelta: 0.005,
 };

@@ -1,7 +1,7 @@
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import * as Location from 'expo-location';
 import {Timestamp} from '@firebase/firestore';
-import {IEntry, IJournal, ILocation} from '@/types';
+import type {IEntry, IJournal, ILocation} from '@/types';
 import {ASYNC_STORAGE_KEYS, MIN_VISIT_DURATION} from '@/constants';
 import {journalApiService} from '@/services/api';
 import {generateId, getTodayDateString, isSameLocation} from '@/utils/location';
@@ -12,7 +12,10 @@ interface IPendingVisit {
   lastUpdateTime: number;
 }
 
-interface ILocalJournal extends Omit<IJournal, 'createdAt' | 'updatedAt' | 'entries'> {
+interface ILocalJournal extends Omit<
+  IJournal,
+  'createdAt' | 'updatedAt' | 'entries'
+> {
   date: string;
   entries: ILocalEntry[];
   localId: string;
@@ -21,7 +24,10 @@ interface ILocalJournal extends Omit<IJournal, 'createdAt' | 'updatedAt' | 'entr
   updatedAt: number;
 }
 
-interface ILocalEntry extends Omit<IEntry, 'createdAt' | 'updatedAt' | 'arrivalTime' | 'departureTime'> {
+interface ILocalEntry extends Omit<
+  IEntry,
+  'createdAt' | 'updatedAt' | 'arrivalTime' | 'departureTime'
+> {
   arrivalTime: number;
   departureTime?: number;
   localId: string;
@@ -34,7 +40,7 @@ const {CURRENT_JOURNAL, PENDING_VISIT} = ASYNC_STORAGE_KEYS;
 
 class JournalService {
   private static instance: JournalService;
-  private isSyncing: boolean = false;
+  private isSyncing = false;
 
   private constructor() {
   }
@@ -73,7 +79,7 @@ class JournalService {
       };
 
       await AsyncStorage.setItem(CURRENT_JOURNAL, JSON.stringify(newJournal));
-      console.log('📓 Created new journal for', todayDate);
+      console.info('📓 Created new journal for', todayDate);
 
       return newJournal;
     } catch (error) {
@@ -82,14 +88,16 @@ class JournalService {
     }
   };
 
-  addOrUpdateEntry = async (location: Location.LocationObject): Promise<void> => {
+  addOrUpdateEntry = async (
+    location: Location.LocationObject,
+  ): Promise<void> => {
     try {
       const journal = await this.getTodaysJournal();
       const now = Date.now();
 
       const locationData = await this.reverseGeocode(
         location.coords.latitude,
-        location.coords.longitude
+        location.coords.longitude,
       );
 
       if (!locationData) {
@@ -105,7 +113,7 @@ class JournalService {
             lastEntry.location.coordinate.latitude,
             lastEntry.location.coordinate.longitude,
             location.coords.latitude,
-            location.coords.longitude
+            location.coords.longitude,
           )
         ) {
           lastEntry.departureTime = now;
@@ -113,7 +121,7 @@ class JournalService {
           lastEntry.updatedAt = now;
 
           await AsyncStorage.setItem(CURRENT_JOURNAL, JSON.stringify(journal));
-          console.log('🔄 Updated departure time for existing entry');
+          console.info('🔄 Updated departure time for existing entry');
           return;
         } else {
           if (!lastEntry.departureTime) {
@@ -142,13 +150,18 @@ class JournalService {
       journal.updatedAt = now;
 
       await AsyncStorage.setItem(CURRENT_JOURNAL, JSON.stringify(journal));
-      console.log('✅ Created new entry at', locationData.value || 'unknown location');
+      console.info(
+        '✅ Created new entry at',
+        locationData.value || 'unknown location',
+      );
     } catch (error) {
       console.error('❌ Error adding/updating entry:', error);
     }
   };
 
-  startPendingVisit = async (location: Location.LocationObject): Promise<void> => {
+  startPendingVisit = async (
+    location: Location.LocationObject,
+  ): Promise<void> => {
     try {
       const pendingVisit: IPendingVisit = {
         location,
@@ -157,13 +170,15 @@ class JournalService {
       };
 
       await AsyncStorage.setItem(PENDING_VISIT, JSON.stringify(pendingVisit));
-      console.log('🚩 Started pending visit');
+      console.info('🚩 Started pending visit');
     } catch (error) {
       console.error('❌ Error starting pending visit:', error);
     }
   };
 
-  updatePendingVisit = async (location: Location.LocationObject): Promise<void> => {
+  updatePendingVisit = async (
+    location: Location.LocationObject,
+  ): Promise<void> => {
     try {
       const pendingVisitJson = await AsyncStorage.getItem(PENDING_VISIT);
 
@@ -176,7 +191,7 @@ class JournalService {
           pendingVisit.location.coords.latitude,
           pendingVisit.location.coords.longitude,
           location.coords.latitude,
-          location.coords.longitude
+          location.coords.longitude,
         )
       ) {
         pendingVisit.lastUpdateTime = Date.now();
@@ -201,7 +216,11 @@ class JournalService {
       if (duration >= MIN_VISIT_DURATION) {
         await this.addOrUpdateEntry(pendingVisit.location);
         await AsyncStorage.removeItem(PENDING_VISIT);
-        console.log('✅ Completed pending visit (stayed for', Math.round(duration / 1000), 'seconds)');
+        console.info(
+          '✅ Completed pending visit (stayed for',
+          Math.round(duration / 1000),
+          'seconds)',
+        );
         return true;
       }
 
@@ -215,7 +234,7 @@ class JournalService {
   cancelPendingVisit = async (): Promise<void> => {
     try {
       await AsyncStorage.removeItem(PENDING_VISIT);
-      console.log('❌ Cancelled pending visit');
+      console.info('❌ Cancelled pending visit');
     } catch (error) {
       console.error('❌ Error cancelling pending visit:', error);
     }
@@ -233,32 +252,34 @@ class JournalService {
 
   syncPendingEntries = async (): Promise<void> => {
     if (this.isSyncing) {
-      console.log('⏳ Sync already in progress, skipping...')
-      return
+      console.info('⏳ Sync already in progress, skipping...');
+      return;
     }
 
     try {
       this.isSyncing = true;
       const journal = await this.getTodaysJournal();
-      const unsyncedEntries = journal.entries.filter(entry => !entry.synced);
+      const unsyncedEntries = journal.entries.filter((entry) => !entry.synced);
 
       if (unsyncedEntries.length === 0) {
-        console.log('✅ No unsynced entries to sync')
-        this.isSyncing = false
-        return
+        console.info('✅ No unsynced entries to sync');
+        this.isSyncing = false;
+        return;
       }
 
-      console.log(`🔄 Syncing ${unsyncedEntries.length} entries to backend...`)
+      console.info(`🔄 Syncing ${unsyncedEntries.length} entries to backend...`);
 
       if (!journal.synced && !journal.id) {
         try {
-          const backendJournal = await journalApiService.createJournal(journal.name);
+          const backendJournal = await journalApiService.createJournal(
+            journal.name,
+          );
           journal.id = backendJournal.id;
           journal.synced = true;
-          console.log('🔄 Synced journal to backend');
+          console.info('🔄 Synced journal to backend');
         } catch (error) {
           console.warn('⚠️ Failed to sync journal:', error);
-          this.isSyncing = false
+          this.isSyncing = false;
           return;
         }
       }
@@ -267,32 +288,39 @@ class JournalService {
         try {
           if (entry.id) {
             await journalApiService.updateEntryTimes(
-              journal.id!,
+              journal.id,
               entry.id,
-              entry.arrivalTime ? Timestamp.fromMillis(entry.arrivalTime).toDate() : undefined,
-              entry.departureTime ? Timestamp.fromMillis(entry.departureTime).toDate() : undefined
+              entry.arrivalTime
+                ? Timestamp.fromMillis(entry.arrivalTime).toDate()
+                : undefined,
+              entry.departureTime
+                ? Timestamp.fromMillis(entry.departureTime).toDate()
+                : undefined,
             );
           } else {
             const backendEntry = await journalApiService.addJournalEntry(
-              journal.id!,
+              journal.id,
               entry.name || 'Untitled',
               entry.location,
               entry.images,
-              entry.thought
+              entry.thought,
             );
 
             entry.id = backendEntry.id;
           }
 
           entry.synced = true;
-          console.log('✅ Synced entry:', entry.location.value || 'unknown location');
+          console.info(
+            '✅ Synced entry:',
+            entry.location.value || 'unknown location',
+          );
         } catch (error) {
           console.warn('⚠️ Failed to sync entry:', error);
         }
       }
 
       await AsyncStorage.setItem(CURRENT_JOURNAL, JSON.stringify(journal));
-      console.log('✅ Sync complete')
+      console.info('✅ Sync complete');
     } catch (error) {
       console.error('❌ Error syncing pending entries:', error);
     } finally {
@@ -303,7 +331,7 @@ class JournalService {
   getUnsyncedCount = async (): Promise<number> => {
     try {
       const journal = await this.getTodaysJournal();
-      return journal.entries.filter(entry => !entry.synced).length;
+      return journal.entries.filter((entry) => !entry.synced).length;
     } catch (error) {
       console.error('❌ Error getting unsynced count:', error);
       return 0;
@@ -318,15 +346,16 @@ class JournalService {
         const localJournal: ILocalJournal = {
           ...status.journal,
           date: getTodayDateString(),
-          entries: (status.journal.entries || []).map(entry => ({
+          entries: (status.journal.entries || []).map((entry) => ({
             ...entry,
-            arrivalTime: entry.arrivalTime instanceof Date
-              ? entry.arrivalTime.getTime()
-              : (entry.arrivalTime as any).toMillis(),
+            arrivalTime:
+              entry.arrivalTime instanceof Date
+                ? entry.arrivalTime.getTime()
+                : entry.arrivalTime.toMillis(),
             departureTime: entry.departureTime
-              ? (entry.departureTime instanceof Date
+              ? entry.departureTime instanceof Date
                 ? entry.departureTime.getTime()
-                : (entry.departureTime as any).toMillis())
+                : entry.departureTime.toMillis()
               : undefined,
             localId: entry.id || generateId(),
             synced: true,
@@ -339,8 +368,11 @@ class JournalService {
           updatedAt: Date.now(),
         };
 
-        await AsyncStorage.setItem(CURRENT_JOURNAL, JSON.stringify(localJournal));
-        console.log('✅ Fetched today\'s journal from backend');
+        await AsyncStorage.setItem(
+          CURRENT_JOURNAL,
+          JSON.stringify(localJournal),
+        );
+        console.info('✅ Fetched today\'s journal from backend');
       }
     } catch (error) {
       console.error('❌ Error fetching today\'s journal:', error);
@@ -349,10 +381,13 @@ class JournalService {
 
   private reverseGeocode = async (
     latitude: number,
-    longitude: number
+    longitude: number,
   ): Promise<ILocation | undefined> => {
     try {
-      const results = await Location.reverseGeocodeAsync({latitude, longitude});
+      const results = await Location.reverseGeocodeAsync({
+        latitude,
+        longitude,
+      });
 
       if (results && results.length > 0) {
         const address = results[0];
@@ -365,7 +400,6 @@ class JournalService {
         ].filter(Boolean);
 
         const value = parts.join(', ');
-        const {GeoPoint} = await import ('@firebase/firestore');
 
         return {
           place: address.name || undefined,
@@ -374,15 +408,15 @@ class JournalService {
           region: address.region || undefined,
           country: address.country || undefined,
           value,
-          coordinate: new GeoPoint(latitude, longitude),
-        }
+          coordinate: {latitude, longitude},
+        };
       }
     } catch (error) {
       console.warn('⚠️ Geocoding failed:', error);
     }
 
     return undefined;
-  }
+  };
 }
 
 export default JournalService.getInstance();

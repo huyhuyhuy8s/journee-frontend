@@ -1,5 +1,8 @@
-import React from "react";
+import type React from 'react';
 
-export interface ISafeAreaViewProps extends Omit<React.PropsWithChildren, 'style'> {
-  style?: object
+export interface ISafeAreaViewProps extends Omit<
+  React.PropsWithChildren,
+  'style'
+> {
+  style?: object;
 }

@@ -1,12 +1,13 @@
 import AsyncStorage from '@react-native-async-storage/async-storage';
-import * as Location from 'expo-location';
-import {ILocationHistoryItem, IStateTransitionResult} from '@/types/location';
+import type * as Location from 'expo-location';
+import type {ILocationHistoryItem, IStateTransitionResult} from '@/types/location';
 import {ASYNC_STORAGE_KEYS, EUserLocationState, MAX_HISTORY_SIZE, STATE_TRANSITION_THRESHOLDS} from '@/constants';
 import {calculateDistance} from '@/utils/location';
 
 const {STATE, HISTORY, LAST_LOCATION} = ASYNC_STORAGE_KEYS;
 const {STATIONARY, SLOW_MOVING, FAST_MOVING} = EUserLocationState;
 const {
+  STATIONARY: THRESHOLDS_STATIONARY,
   SLOW_MOVING: THRESHOLDS_SLOW_MOVING,
   FAST_MOVING: THRESHOLDS_FAST_MOVING,
 } = STATE_TRANSITION_THRESHOLDS;
@@ -24,10 +25,14 @@ class UserLocationStateService {
     return UserLocationStateService.instance;
   };
 
-  addLocationToHistory = async (location: Location.LocationObject): Promise<void> => {
+  addLocationToHistory = async (
+    location: Location.LocationObject,
+  ): Promise<void> => {
     try {
       const historyJson = await AsyncStorage.getItem(HISTORY);
-      const history: ILocationHistoryItem[] = historyJson ? JSON.parse(historyJson) : [];
+      const history: ILocationHistoryItem[] = historyJson
+        ? JSON.parse(historyJson)
+        : [];
 
       const newItem: ILocationHistoryItem = {
         latitude: location.coords.latitude,
@@ -118,9 +123,10 @@ class UserLocationStateService {
               newState = STATIONARY;
             }
           } else {
-            newState = velocity >= STATE_TRANSITION_THRESHOLDS.SLOW_MOVING.VELOCITY
-              ? SLOW_MOVING
-              : STATIONARY;
+            newState =
+              velocity >= THRESHOLDS_SLOW_MOVING.VELOCITY
+                ? SLOW_MOVING
+                : STATIONARY;
           }
           break;
 
@@ -134,9 +140,9 @@ class UserLocationStateService {
               currentLocation.coords.longitude,
             );
 
-            if (distance >= STATE_TRANSITION_THRESHOLDS.FAST_MOVING.VELOCITY) {
+            if (distance >= THRESHOLDS_FAST_MOVING.VELOCITY) {
               newState = FAST_MOVING;
-            } else if (distance >= STATE_TRANSITION_THRESHOLDS.STATIONARY.VELOCITY) {
+            } else if (distance >= THRESHOLDS_STATIONARY.VELOCITY) {
               newState = SLOW_MOVING;
             } else {
               newState = STATIONARY;
@@ -159,7 +165,9 @@ class UserLocationStateService {
 
       if (shouldUpdateInterval) {
         await this.setCurrentState(newState);
-        console.log(`🏃 State transition: ${currentState} → ${newState} (v: ${velocity.toFixed(2)} km/h)`);
+        console.info(
+          `🏃 State transition: ${currentState} → ${newState} (v: ${velocity.toFixed(2)} km/h)`,
+        );
       }
 
       return {
@@ -204,12 +212,8 @@ class UserLocationStateService {
 
   clearLocationData = async (): Promise<void> => {
     try {
-      await AsyncStorage.multiRemove([
-        STATE,
-        HISTORY,
-        LAST_LOCATION,
-      ]);
-      console.log('🧹 Location data cleared');
+      await AsyncStorage.multiRemove([STATE, HISTORY, LAST_LOCATION]);
+      console.info('🧹 Location data cleared');
     } catch (error) {
       console.error('❌ Error clearing location data:', error);
     }
@@ -219,7 +223,9 @@ class UserLocationStateService {
     if (history.length < 2) return 0;
 
     const fiveMinutesAgo = Date.now() - 5 * 60 * 1000;
-    const recentHistory = history.filter(item => item.timestamp >= fiveMinutesAgo);
+    const recentHistory = history.filter(
+      (item) => item.timestamp >= fiveMinutesAgo,
+    );
 
     if (recentHistory.length < 2) {
       const latestSpeed = history[history.length - 1].speed;
@@ -236,7 +242,8 @@ class UserLocationStateService {
       newest.longitude,
     );
 
-    const timeInHours = (newest.timestamp - oldest.timestamp) / (1000 * 60 * 60);
+    const timeInHours =
+      (newest.timestamp - oldest.timestamp) / (1000 * 60 * 60);
     return timeInHours > 0 ? distance / timeInHours : 0;
   };
 }

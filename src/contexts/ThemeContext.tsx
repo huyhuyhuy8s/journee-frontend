@@ -1,16 +1,16 @@
-import { createContext, useContext, useReducer, ReactNode } from "react";
+import {createContext, type Dispatch, type ReactNode, useContext, useReducer} from 'react';
 
 // Define types
-type Theme = "light" | "dark";
-type ThemeAction = { type: "LIGHT" } | { type: "DARK" };
-type ThemeContextType = [Theme, React.Dispatch<ThemeAction>] | undefined;
+type Theme = 'light' | 'dark';
+type ThemeAction = { type: 'LIGHT' } | { type: 'DARK' };
+type ThemeContextType = [Theme, Dispatch<ThemeAction>] | undefined;
 
 const themeReducer = (state: Theme, action: ThemeAction): Theme => {
   switch (action.type) {
-    case "LIGHT":
-      return "light"; // Return new state
-    case "DARK":
-      return "dark"; // Return new state
+    case 'LIGHT':
+      return 'light'; // Return new state
+    case 'DARK':
+      return 'dark'; // Return new state
     default:
       return state; // Return current state for unknown actions
   }
@@ -25,7 +25,7 @@ interface ThemeContextProviderProps {
 export const ThemeContextProvider = ({
   children,
 }: ThemeContextProviderProps) => {
-  const [theme, themeDispatch] = useReducer(themeReducer, "dark");
+  const [theme, themeDispatch] = useReducer(themeReducer, 'dark');
 
   return (
     <ThemeContext.Provider value={[theme, themeDispatch]}>
@@ -37,16 +37,16 @@ export const ThemeContextProvider = ({
 export const useThemeValue = (): Theme => {
   const context = useContext(ThemeContext);
   if (!context) {
-    throw new Error("useThemeValue must be used within a ThemeContextProvider");
+    throw new Error('useThemeValue must be used within a ThemeContextProvider');
   }
   return context[0];
 };
 
-export const useThemeDispatch = (): React.Dispatch<ThemeAction> => {
+export const useThemeDispatch = (): Dispatch<ThemeAction> => {
   const context = useContext(ThemeContext);
   if (!context) {
     throw new Error(
-      "useThemeDispatch must be used within a ThemeContextProvider"
+      'useThemeDispatch must be used within a ThemeContextProvider',
     );
   }
   return context[1];

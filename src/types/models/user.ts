@@ -1,12 +1,13 @@
-import {ELocationSetting, EUserLocationState} from "@/constants";
-import {ILocation} from "@/types";
-import {Timestamp} from "@firebase/firestore";
+import type {ELocationSetting, EUserLocationState} from '@/constants';
+import type {ILocation} from '@/types';
+import type {Timestamp} from '@firebase/firestore';
 
 export interface IUser {
   id: string;
   name: string;
   email: string;
-  avatar: string;
+  avatar?: string;
+  token?: string;
 }
 
 export type TActionSetting = {

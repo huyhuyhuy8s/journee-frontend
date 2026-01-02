@@ -1,22 +1,21 @@
-import {useTheme} from "@/theme";
-import {ActivityIndicator, Alert, StyleSheet, TouchableOpacity, View} from "react-native";
-import {Text, TextInput} from "@/components/global";
-import {MaterialIcons} from "@expo/vector-icons";
-import React, {useMemo, useState} from "react";
-import {validateEmail} from "@/utils/auth";
-import {useAuth} from "@/contexts/AuthContext";
-import {IThemeColors} from "@/theme/types";
+import {useTheme} from '@/theme';
+import {ActivityIndicator, StyleSheet, TouchableOpacity, View} from 'react-native';
+import {Text, TextInput} from '@/components/global';
+import {MaterialIcons} from '@expo/vector-icons';
+import React, {useMemo, useState} from 'react';
+import {validateEmail} from '@/utils/auth';
+import {useAuth} from '@/contexts/AuthContext';
+import type {IThemeColors} from '@/theme/types';
 
-interface ILoginFormProps {
-}
-
-const LoginForm = ({}: ILoginFormProps) => {
+const LoginForm = () => {
   const {login, isLoading} = useAuth();
   const {colors} = useTheme();
 
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
-  const [errors, setErrors] = useState<{ email?: string; password?: string }>({});
+  const [errors, setErrors] = useState<{ email?: string; password?: string }>(
+    {},
+  );
   const [isSecurePassword, setIsSecurePassword] = useState(true);
 
   const styles = useMemo(() => createStyles(colors), [colors]);
@@ -41,14 +40,13 @@ const LoginForm = ({}: ILoginFormProps) => {
       return;
     }
 
-    try {
-      const response = await login(email.trim().toLowerCase(), trimmedPassword);
-      if (response.status === 401) setErrors({
+    const response = await login(email.trim().toLowerCase(), trimmedPassword);
+    if (response.meta.status === 401) {
+      console.info('Login failed: Invalid email or password');
+      setErrors({
         email: 'Invalid email or password',
-        password: 'Invalid email or password'
+        password: 'Invalid email or password',
       });
-    } catch (error: any) {
-      Alert.alert('Login Failed', error.message);
     }
   };
 
@@ -81,14 +79,22 @@ const LoginForm = ({}: ILoginFormProps) => {
           secureTextEntry={isSecurePassword}
           editable={!isLoading}
           accessibilityLanguage={'en-US'}
-          autoCapitalize='none'
+          autoCapitalize="none"
           maxLength={50}
         />
-        <MaterialIcons name={isSecurePassword ? 'visibility' : 'visibility-off'} size={24} color={colors.text}
-                       onPress={() => setIsSecurePassword(!isSecurePassword)}
-                       style={styles.securePassword}
-        />
-        {errors.password && <Text style={styles.errorText}>{errors.password}</Text>}
+        <TouchableOpacity
+          onPress={() => setIsSecurePassword(!isSecurePassword)}
+          style={styles.securePassword}
+        >
+          <MaterialIcons
+            name={isSecurePassword ? 'visibility' : 'visibility-off'}
+            size={24}
+            color={colors.text}
+          />
+        </TouchableOpacity>
+        {errors.password && (
+          <Text style={styles.errorText}>{errors.password}</Text>
+        )}
       </View>
 
       <TouchableOpacity
@@ -103,64 +109,65 @@ const LoginForm = ({}: ILoginFormProps) => {
         )}
       </TouchableOpacity>
     </View>
-  )
-}
+  );
+};
 
 export default LoginForm;
 
-const createStyles = (colors: IThemeColors) => StyleSheet.create({
-  form: {
-    marginBottom: 24,
-  },
-  inputContainer: {
-    marginBottom: 20,
-  },
-  label: {
-    fontSize: 14,
-    fontWeight: '600',
-    color: colors.text,
-    marginBottom: 8,
-    opacity: 0.8,
-  },
-  input: {
-    backgroundColor: colors.background700,
-    borderRadius: 12,
-    padding: 16,
-    fontSize: 16,
-    color: colors.text,
-    borderWidth: 1,
-    borderColor: colors.background700,
-  },
-  inputError: {
-    borderColor: '#ff4444',
-  },
-  errorText: {
-    color: '#ff4444',
-    fontSize: 12,
-    marginTop: 4,
-  },
-  button: {
-    backgroundColor: colors.primary,
-    borderRadius: 12,
-    padding: 16,
-    alignItems: 'center',
-    marginTop: 8,
-  },
-  buttonDisabled: {
-    opacity: 0.6,
-  },
-  buttonText: {
-    color: '#ffffff',
-    fontSize: 16,
-    fontWeight: 'bold',
-  },
-  link: {
-    color: colors.primary,
-    fontWeight: 'bold',
-  },
-  securePassword: {
-    position: 'absolute',
-    top: 42.5,
-    right: 17.5,
-  }
-})
+const createStyles = (colors: IThemeColors) =>
+  StyleSheet.create({
+    form: {
+      marginBottom: 24,
+    },
+    inputContainer: {
+      marginBottom: 20,
+    },
+    label: {
+      fontSize: 14,
+      fontWeight: '600',
+      color: colors.text,
+      marginBottom: 8,
+      opacity: 0.8,
+    },
+    input: {
+      backgroundColor: colors.background700,
+      borderRadius: 12,
+      padding: 16,
+      fontSize: 16,
+      color: colors.text,
+      borderWidth: 1,
+      borderColor: colors.background700,
+    },
+    inputError: {
+      borderColor: '#ff4444',
+    },
+    errorText: {
+      color: '#ff4444',
+      fontSize: 12,
+      marginTop: 4,
+    },
+    button: {
+      backgroundColor: colors.primary,
+      borderRadius: 12,
+      padding: 16,
+      alignItems: 'center',
+      marginTop: 8,
+    },
+    buttonDisabled: {
+      opacity: 0.6,
+    },
+    buttonText: {
+      color: '#ffffff',
+      fontSize: 16,
+      fontWeight: 'bold',
+    },
+    link: {
+      color: colors.primary,
+      fontWeight: 'bold',
+    },
+    securePassword: {
+      position: 'absolute',
+      top: 42.5,
+      right: 17.5,
+    },
+  });

@@ -1,27 +1,5 @@
-import apiClient from '@/utils/apiClient';
-import {IEntry, IJournal, ILocation} from '@/types';
-import {Timestamp} from '@firebase/firestore';
-
-interface IApiResponse<T> {
-  meta: {
-    status: number;
-    message: string;
-    error?: string;
-  };
-  results?: T;
-}
-
-interface ICreateJournalResponse {
-  journal: IJournal;
-}
-
-interface ICreateEntryResponse {
-  entry: IEntry;
-}
-
-interface IUpdateEntryResponse {
-  entry: IEntry;
-}
+import apiClient from '@/utils/axiosInstance';
+import type {IEntry, IJournal, ILocation} from '@/types';
 
 interface ILocationUpdateResponse {
   journal: {
@@ -32,8 +10,8 @@ interface ILocationUpdateResponse {
     id: string;
     name?: string;
     location: ILocation;
-    arrivalTime: Timestamp | Date;
-    departureTime?: Timestamp | Date;
+    arrivalTime: Date;
+    departureTime?: Date;
   };
 }
 
@@ -51,25 +29,24 @@ export class JournalApiService {
   };
 
   createJournal = async (name: string): Promise<IJournal> => {
-    const response = await apiClient.post<IApiResponse<ICreateJournalResponse>>(
+    const response = await apiClient.post<{ journal: IJournal }>(
       '/journals',
-      {name}
+      {name},
     );
-    return response.data.results!.journal;
+    return response.results.journal;
   };
 
   getAllJournals = async (): Promise<IJournal[]> => {
-    const response = await apiClient.get<IApiResponse<{ journals: IJournal[] }>>(
-      '/journals'
-    );
-    return response.data.results!.journals;
+    const response =
+      await apiClient.get<{ journals: IJournal[] }>('/journals');
+    return response.results.journals;
   };
 
   getJournalById = async (journalId: string): Promise<IJournal> => {
-    const response = await apiClient.get<IApiResponse<{ journal: IJournal }>>(
-      `/journals/${journalId}`
+    const response = await apiClient.get<{ journal: IJournal }>(
+      `/journals/${journalId}`,
     );
-    return response.data.results!.journal;
+    return response.results.journal;
   };
 
   updateJournal = async (journalId: string, name: string): Promise<void> => {
@@ -85,18 +62,18 @@ export class JournalApiService {
     name: string,
     location: ILocation,
     images?: string[],
-    thought?: string
+    thought?: string,
   ): Promise<IEntry> => {
-    const response = await apiClient.post<IApiResponse<ICreateEntryResponse>>(
+    const response = await apiClient.post<{ entry: IEntry }>(
       `/journals/${journalId}/entry`,
       {
         name,
         location,
         images: images || [],
         thought,
-      }
+      },
     );
-    return response.data.results!.entry;
+    return response.results.entry;
   };
 
   updateJournalEntry = async (
@@ -107,31 +84,31 @@ export class JournalApiService {
       location?: ILocation;
       images?: string[];
       thought?: string;
-    }
+    },
   ): Promise<IEntry> => {
-    const response = await apiClient.patch<IApiResponse<IUpdateEntryResponse>>(
+    const response = await apiClient.patch<{ entry: IEntry }>(
       `/journals/${journalId}/entry/${entryId}`,
-      updates
+      updates,
     );
-    return response.data.results!.entry;
+    return response.results.entry;
   };
 
   updateEntryTimes = async (
     journalId: string,
     entryId: string,
-    arrivalTime?: Timestamp | Date,
-    departureTime?: Timestamp | Date
+    arrivalTime?: Date,
+    departureTime?: Date,
   ): Promise<void> => {
-    await apiClient.patch(
-      `/journals/${journalId}/entry/${entryId}/times`,
-      {
-        arrivalTime,
-        departureTime,
-      }
-    );
+    await apiClient.patch(`/journals/${journalId}/entry/${entryId}/times`, {
+      arrivalTime,
+      departureTime,
+    });
   };
 
-  deleteJournalEntry = async (journalId: string, entryId: string): Promise<void> => {
+  deleteJournalEntry = async (
+    journalId: string,
+    entryId: string,
+  ): Promise<void> => {
     await apiClient.delete(`/journals/${journalId}/entry/${entryId}`);
   };
 
@@ -142,32 +119,32 @@ export class JournalApiService {
     city?: string,
     region?: string,
     country?: string,
-    value?: string
+    value?: string,
   ): Promise<ILocationUpdateResponse> => {
-    const response = await apiClient.post<IApiResponse<ILocationUpdateResponse>>(
-      '/location',
-      {
-        coordinate,
-        place,
-        street,
-        city,
-        region,
-        country,
-        value,
-      }
-    );
-    console.log('response update service', response.data.meta.message)
-    return response.data.results!;
+    const response = await apiClient.post<
+      ILocationUpdateResponse
+    >('/location', {
+      coordinate,
+      place,
+      street,
+      city,
+      region,
+      country,
+      value,
+    });
+    console.info('response update service', response.meta.message);
+    return response.results;
   };
 
   getTodayStatus = async (): Promise<{
     journal: IJournal | null;
     latestEntry: IEntry | null;
   }> => {
-    const response = await apiClient.get<
-      IApiResponse<{ journal: IJournal | null; latestEntry: IEntry | null }>
-    >('/location');
-    return response.data.results!;
+    const response =
+      await apiClient.get<
+        { journal: IJournal | null; latestEntry: IEntry | null }
+      >('/location');
+    return response.results;
   };
 }
 

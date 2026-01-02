@@ -1,23 +1,27 @@
-import {createContext, ReactNode, useContext, useEffect, useState} from "react";
-import {IResponse, IResponseError, IUser} from "@/types";
+import {createContext, type ReactNode, useContext, useEffect, useState} from 'react';
+import type {IResponse, IResponseError, IUser} from '@/types';
 import * as SecureStore from 'expo-secure-store';
 import AsyncStorage from '@react-native-async-storage/async-storage';
-import {AxiosError} from "axios";
-import {isUndefined} from "lodash";
-import {ASYNC_STORAGE_KEYS, DEFAULT_BACKEND_RESPONSE, STORAGE_KEYS} from "@/constants/global";
-import apiClient from "@/utils/apiClient";
-import {ToastAndroid} from "react-native";
+import {isUndefined} from 'lodash';
+import {ASYNC_STORAGE_KEYS, DEFAULT_BACKEND_RESPONSE, STORAGE_KEYS} from '@/constants/global';
+import apiClient from '@/utils/axiosInstance';
+import {ToastAndroid} from 'react-native';
 
-const {AUTH_TOKEN} = STORAGE_KEYS
-const {USER_DATA: ASYNC_USER_DATA} = ASYNC_STORAGE_KEYS
+const {AUTH_TOKEN} = STORAGE_KEYS;
+const {USER_DATA: ASYNC_USER_DATA} = ASYNC_STORAGE_KEYS;
 
 interface IUserContext {
   user: IUser | null;
   isAuthenticated: boolean;
   isLoading: boolean;
-  login: (email: string, password: string) => Promise<IResponse>;
-  register: (name: string, email: string, password: string, avatar?: string) => Promise<IResponse>;
-  logout: () => Promise<IResponse>;
+  login: (email: string, password: string) => Promise<IResponse | IResponseError>;
+  register: (
+    name: string,
+    email: string,
+    password: string,
+    avatar?: string,
+  ) => Promise<IResponse | IResponseError>;
+  logout: () => Promise<IResponse | IResponseError>;
 }
 
 const AuthContext = createContext<IUserContext>({
@@ -58,76 +62,85 @@ export const AuthProvider = (props: IAuthProviderProps) => {
     loadStoredData().then();
   }, []);
 
-  const login = async (email: string, password: string): Promise<IResponse> => {
+  const login = async (email: string, password: string): Promise<IResponse | IResponseError> => {
     setIsLoading(true);
     try {
-      const response = await apiClient.post('/users/login', {email, password})
-      const results = response.data.results;
-      const meta = response.data.meta;
+      const response = await apiClient.post<IUser>('/users/login', {
+        email,
+        password,
+      });
+      const results = response.results;
 
       const token = results.token;
       const user = {
         id: results.id,
         name: results.name,
         email: results.email,
-        avatar: results.avatar
+        avatar: results.avatar,
       };
 
-      await SecureStore.setItemAsync(AUTH_TOKEN, token);
-      await AsyncStorage.setItem(ASYNC_USER_DATA, JSON.stringify(user))
+      if (token) await SecureStore.setItemAsync(AUTH_TOKEN, token);
+      await AsyncStorage.setItem(ASYNC_USER_DATA, JSON.stringify(user));
 
       setUser(user);
       setIsAuthenticated(true);
-      return {
-        status: meta.status,
-        message: meta.message
-      }
-    } catch (error: AxiosError<IResponseError> | any) {
-      ToastAndroid.show(`Error when logging ${error.status}: ${error.error}, ${error.message}`, ToastAndroid.LONG);
-      return error
+      return response;
+    } catch (error: unknown) {
+      const err = (error as IResponseError);
+      ToastAndroid.show(
+        `Error when logging ${err.meta.status} ${err.meta.error}: ${err.meta.message}`,
+        ToastAndroid.LONG,
+      );
+      return err;
     } finally {
       setIsLoading(false);
     }
-  }
+  };
 
-  const register = async (name: string, email: string, password: string, avatar?: string): Promise<IResponse> => {
+  const register = async (
+    name: string,
+    email: string,
+    password: string,
+    avatar?: string,
+  ): Promise<IResponse | IResponseError> => {
     setIsLoading(true);
     try {
-      const response = await apiClient.post('/users/register', {name, email, password, avatar});
-      return {
-        status: response.data.meta.status,
-        message: response.data.meta.message
-      }
-
-    } catch (error: AxiosError | any) {
-      console.error(`Error when register account ${error.status}: ${error.error}, ${error.message}`);
-      return error
+      return await apiClient.post('/users/register', {
+        name,
+        email,
+        password,
+        avatar,
+      });
+    } catch (error: unknown) {
+      const err = (error as IResponseError).meta;
+      console.error(
+        `Error when register account ${err.status}: ${err.error}, ${err.message}`,
+      );
+      return error as IResponseError;
     } finally {
       setIsLoading(false);
     }
-  }
+  };
 
-  const logout = async () => {
+  const logout = async (): Promise<IResponse | IResponseError> => {
     setIsLoading(true);
     try {
-      const response = await apiClient.post('/users/logout')
-      const meta = response.data.meta;
-
+      const response = await apiClient.post('/users/logout');
       await SecureStore.deleteItemAsync(AUTH_TOKEN);
       await AsyncStorage.removeItem(ASYNC_USER_DATA);
       setUser(null);
       setIsAuthenticated(false);
-      return {
-        status: meta.status,
-        message: meta.message
-      }
-    } catch (error: AxiosError | any) {
-      console.error(`Error when logout ${error.status}: ${error.error}, ${error.message}`);
-      return error
+      return response;
+    } catch (error: unknown) {
+      const err = (error as IResponseError);
+      console.error(
+        `Error when logout ${err.meta.status}: ${err.meta.error}, ${err.meta.message}`,
+      );
+      return err;
     } finally {
       setIsLoading(false);
     }
-  }
+  };
 
   const value = {
     user,
@@ -135,15 +148,13 @@ export const AuthProvider = (props: IAuthProviderProps) => {
     isLoading,
     login,
     register,
-    logout
-  }
+    logout,
+  };
 
   return (
-    <AuthContext.Provider value={value}>
-      {props.children}
-    </AuthContext.Provider>
-  )
-}
+    <AuthContext.Provider value={value}>{props.children}</AuthContext.Provider>
+  );
+};
 
 export const useAuth = () => {
   const context = useContext(AuthContext);
@@ -153,4 +164,4 @@ export const useAuth = () => {
   }
 
   return context;
-}
+};

@@ -1,6 +1,11 @@
-import {ButtonProps} from 'react-native'
+import type { ButtonProps } from 'react-native';
 
-export type TButtonVariant = 'primary' | 'secondary' | 'accent' | 'danger' | 'outline';
+export type TButtonVariant =
+  | 'primary'
+  | 'secondary'
+  | 'accent'
+  | 'danger'
+  | 'outline';
 export type TButtonSize = 'small' | 'medium' | 'large';
 
 export interface IButtonProps extends ButtonProps {

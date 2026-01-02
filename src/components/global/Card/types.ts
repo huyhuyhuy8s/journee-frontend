@@ -1,6 +1,6 @@
-import {PropsWithChildren} from "react";
+import type { PropsWithChildren } from 'react';
 
 export interface ICardProps extends PropsWithChildren {
-  style?: object,
-  elevation?: number
+  style?: object;
+  elevation?: number;
 }

@@ -32,5 +32,11 @@ build-production:
 doctor:
 	npx expo-doctor
 
+lint:
+	yarn lint
+
+lint-fix:
+	yarn lint:fix
+
 update:
 	eas update:configure

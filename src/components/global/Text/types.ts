@@ -1,5 +1,5 @@
-import {TextProps} from "react-native";
+import type { TextProps } from 'react-native';
 
 export interface ITextProps extends TextProps {
-  style?: object
+  style?: object;
 }

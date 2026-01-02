@@ -1,5 +1,5 @@
-import {formatRgb, oklch} from 'culori';
-import {IThemeColors} from '@/theme/types';
+import { formatRgb, oklch } from 'culori';
+import type { IThemeColors } from '@/theme/types';
 
 export const convertOklchToRgb = (oklchColor: string): string => {
   try {
