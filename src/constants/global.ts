@@ -1,8 +1,15 @@
-export const DEFAULT_BACKEND_RESPONSE = {status: 100, message: '', error: ''}
+export const DEFAULT_BACKEND_RESPONSE = {
+  meta: {
+    status: 500,
+    message: 'An unexpected error occurred.',
+    error: 'Internal Server Error',
+  },
+  results: null,
+} as const;
 
 export const STORAGE_KEYS = {
-  AUTH_TOKEN: "authToken",
-} as const
+  AUTH_TOKEN: 'authToken',
+} as const;
 
 export const ASYNC_STORAGE_KEYS = {
   STATE: 'userLocationState',
@@ -15,4 +22,4 @@ export const ASYNC_STORAGE_KEYS = {
   LOCATION_STATE_CHANGED: 'locationStateChanged',
   LAST_BACKGROUND_PROCESS: 'lastBackgroundProcess',
   LAST_FOREGROUND_PROCESS: 'lastForegroundProcess',
-} as const
+} as const;

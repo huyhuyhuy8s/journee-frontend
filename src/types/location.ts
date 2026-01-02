@@ -1,7 +1,7 @@
-import {Timestamp} from "@firebase/firestore";
-import * as Location from 'expo-location';
-import {ILocation} from "@/types/models/location";
-import {EUserLocationState} from "@/constants";
+import type { Timestamp } from '@firebase/firestore';
+import type * as Location from 'expo-location';
+import type { ILocation } from '@/types/models/location';
+import type { EUserLocationState } from '@/constants';
 
 export interface ILocationHistoryItem {
   latitude: number;

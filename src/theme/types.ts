@@ -1,4 +1,4 @@
-import {ColorValue} from "react-native";
+import type { ColorValue } from 'react-native';
 
 export interface IThemeColors {
   text: ColorValue;
@@ -71,6 +71,6 @@ export type TThemeScheme = 'dark' | 'light' | boolean;
 
 export interface IThemeContext {
   isDark: boolean;
-  colors: IThemeColors
+  colors: IThemeColors;
   setScheme: (scheme: TThemeScheme) => void;
 }

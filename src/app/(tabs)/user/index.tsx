@@ -1,14 +1,17 @@
-import Text from "@/components/global/Text";
-import {useTheme} from "@/theme";
-import {ScrollView, StyleSheet, View} from "react-native";
-import {useAuth} from "@/contexts/AuthContext";
-import {LogoutButton, UserInfo} from "@/features/users/components/AuthComponents";
-import {Button, SafeAreaView} from "@/components/global";
-import {useRouter} from "expo-router";
+import Text from '@/components/global/Text';
+import { useTheme } from '@/theme';
+import { ScrollView, StyleSheet, View } from 'react-native';
+import { useAuth } from '@/contexts/AuthContext';
+import {
+  LogoutButton,
+  UserInfo,
+} from '@/features/users/components/AuthComponents';
+import { Button, SafeAreaView } from '@/components/global';
+import { useRouter } from 'expo-router';
 
 const User = () => {
-  const {colors, isDark} = useTheme();
-  const {user, isAuthenticated} = useAuth();
+  const { colors, isDark } = useTheme();
+  const { user, isAuthenticated } = useAuth();
   const router = useRouter();
 
   const styles = StyleSheet.create({
@@ -29,7 +32,9 @@ const User = () => {
     section: {
       marginBottom: 24,
       padding: 16,
-      backgroundColor: isDark ? 'rgba(219, 80, 0, 0.1)' : 'rgba(255, 116, 36, 0.1)',
+      backgroundColor: isDark
+        ? 'rgba(219, 80, 0, 0.1)'
+        : 'rgba(255, 116, 36, 0.1)',
       borderRadius: 12,
     },
     sectionTitle: {
@@ -71,7 +76,7 @@ const User = () => {
       <ScrollView style={styles.container}>
         <View style={styles.header}>
           <Text style={styles.title}>Profile</Text>
-          <UserInfo/>
+          <UserInfo />
         </View>
 
         <View style={styles.section}>
@@ -93,12 +98,16 @@ const User = () => {
           </View>
         </View>
 
-        <Button variant='primary' title='Settings' onPress={() => router.navigate('/user/settings')}></Button>
+        <Button
+          variant="primary"
+          title="Settings"
+          onPress={() => router.navigate('/user/settings')}
+        ></Button>
 
-        <LogoutButton variant="primary"/>
+        <LogoutButton variant="primary" />
       </ScrollView>
     </SafeAreaView>
   );
-}
+};
 
 export default User;

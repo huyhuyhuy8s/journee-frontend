@@ -1,7 +1,10 @@
-export interface IResponse {
-  status: number,
-  message: string,
-  error?: string,
+export interface IResponse<T = unknown> {
+  meta: {
+    status: number;
+    message: string;
+    error?: string;
+  },
+  results: T;
 }
 
 export interface IResponseError {
@@ -9,5 +12,6 @@ export interface IResponseError {
     status: number;
     message: string;
     error: string;
-  }
+  },
+  results: null | [];
 }

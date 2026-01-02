@@ -1,4 +1,4 @@
-import {IJournal} from "@/types";
+import type { IJournal } from '@/types';
 
 export interface IPost {
   id: string;
@@ -19,7 +19,7 @@ export interface IComment {
   createdAt: Date;
 }
 
-export type TReactionType = "like" | "love" | "haha" | "wow" | "sad" | "angry";
+export type TReactionType = 'like' | 'love' | 'haha' | 'wow' | 'sad' | 'angry';
 
 export interface IReaction {
   id: string;

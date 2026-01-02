@@ -1,13 +1,13 @@
-import React, {useEffect, useState} from 'react';
-import {StyleSheet, View} from 'react-native';
+import React, { useEffect, useState } from 'react';
+import { StyleSheet, View } from 'react-native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
-import {Button, Card, Text} from '@/components/global';
-import {useTheme} from '@/theme';
-import {useLocationState} from '@/contexts/LocationStateContext';
-import {ASYNC_STORAGE_KEYS} from '@/constants';
-import {formatCoordinate} from '@/utils/location';
+import { Button, Card, Text } from '@/components/global';
+import { useTheme } from '@/theme';
+import { useLocationState } from '@/contexts/LocationStateContext';
+import { ASYNC_STORAGE_KEYS } from '@/constants';
+import { formatCoordinate } from '@/utils/location';
 
-const {CURRENT_LOCATION} = ASYNC_STORAGE_KEYS;
+const { CURRENT_LOCATION } = ASYNC_STORAGE_KEYS;
 
 interface ICurrentLocation {
   latitude: number;
@@ -16,7 +16,7 @@ interface ICurrentLocation {
 }
 
 export const ForegroundController: React.FC = () => {
-  const {colors} = useTheme();
+  const { colors } = useTheme();
   const {
     isForegroundStarted,
     startForegroundTracking,
@@ -25,16 +25,21 @@ export const ForegroundController: React.FC = () => {
     requestPermissions,
   } = useLocationState();
 
-  const [currentLocation, setCurrentLocation] = useState<ICurrentLocation | null>(null);
+  const [currentLocation, setCurrentLocation] =
+    useState<ICurrentLocation | null>(null);
   const [updateCount, setUpdateCount] = useState<number>(0);
 
   useEffect(() => {
     const interval = setInterval(async () => {
       const locationJson = await AsyncStorage.getItem(CURRENT_LOCATION);
       if (locationJson) {
-        const location = JSON.parse(locationJson);
-        setCurrentLocation(location);
-        setUpdateCount(prev => prev + 1);
+        try {
+          const location = JSON.parse(locationJson);
+          setCurrentLocation(location);
+          setUpdateCount((prev) => prev + 1);
+        } catch (error) {
+          console.error('Error parsing location from AsyncStorage', error);
+        }
       }
     }, 1000);
 
@@ -165,8 +170,8 @@ export const ForegroundController: React.FC = () => {
         <Text style={styles.title}>Live Location</Text>
         {isForegroundStarted && (
           <View style={styles.pulseDot}>
-            <View style={styles.pulse}/>
-            <View style={styles.dot}/>
+            <View style={styles.pulse} />
+            <View style={styles.dot} />
           </View>
         )}
       </View>
@@ -180,7 +185,7 @@ export const ForegroundController: React.FC = () => {
             </Text>
           </View>
 
-          <View style={styles.divider}/>
+          <View style={styles.divider} />
 
           <View style={styles.infoRow}>
             <Text style={styles.infoLabel}>Longitude</Text>
@@ -189,14 +194,14 @@ export const ForegroundController: React.FC = () => {
             </Text>
           </View>
 
-          <View style={styles.divider}/>
+          <View style={styles.divider} />
 
           <View style={styles.infoRow}>
             <Text style={styles.infoLabel}>Updates</Text>
             <Text style={styles.infoValue}>{updateCount}</Text>
           </View>
 
-          <View style={styles.divider}/>
+          <View style={styles.divider} />
 
           <View style={styles.infoRow}>
             <Text style={styles.infoLabel}>Last Update</Text>
@@ -215,7 +220,9 @@ export const ForegroundController: React.FC = () => {
       )}
 
       <Button
-        title={isForegroundStarted ? 'Stop Live Tracking' : 'Start Live Tracking'}
+        title={
+          isForegroundStarted ? 'Stop Live Tracking' : 'Start Live Tracking'
+        }
         variant={isForegroundStarted ? 'danger' : 'primary'}
         onPress={handleToggleTracking}
       />

@@ -1,10 +1,10 @@
-import {StyleSheet, View} from "react-native";
-import {useTheme} from "@/theme";
-import {ICardProps} from "@/components/global/Card/types";
+import { StyleSheet, View } from 'react-native';
+import { useTheme } from '@/theme';
+import type { ICardProps } from '@/components/global/Card/types';
 
 const Card = (props: ICardProps) => {
-  const {colors} = useTheme();
-  const {style, elevation, children} = props
+  const { colors } = useTheme();
+  const { style, elevation, children } = props;
 
   const styles = StyleSheet.create({
     card: {
@@ -15,13 +15,9 @@ const Card = (props: ICardProps) => {
       backgroundColor: colors.background200,
       elevation: elevation ?? 2,
     },
-  })
+  });
 
-  return (
-    <View style={[styles.card, style]}>
-      {children}
-    </View>
-  )
-}
+  return <View style={[styles.card, style]}>{children}</View>;
+};
 
 export default Card;

@@ -1,19 +1,28 @@
 import React from 'react';
-import {Alert, StyleSheet, Text, TouchableOpacity, View} from 'react-native';
+import {
+  Alert,
+  type StyleProp,
+  StyleSheet,
+  Text,
+  type TextStyle,
+  TouchableOpacity,
+  View,
+  type ViewStyle,
+} from 'react-native';
 import {useAuth} from '@/contexts/AuthContext';
 import {useTheme} from '@/theme';
 
 interface LogoutButtonProps {
-  style?: any;
-  textStyle?: any;
+  style?: StyleProp<ViewStyle>;
+  textStyle?: StyleProp<TextStyle>;
   variant?: 'primary' | 'secondary' | 'text';
 }
 
 export const LogoutButton: React.FC<LogoutButtonProps> = ({
-                                                            style,
-                                                            textStyle,
-                                                            variant = 'primary'
-                                                          }) => {
+  style,
+  textStyle,
+  variant = 'primary',
+}) => {
   const {logout, isLoading} = useAuth();
   const {isDark} = useTheme();
 
@@ -32,7 +41,7 @@ export const LogoutButton: React.FC<LogoutButtonProps> = ({
           onPress: logout,
         },
       ],
-      {cancelable: true}
+      {cancelable: true},
     );
   };
 
@@ -47,7 +56,9 @@ export const LogoutButton: React.FC<LogoutButtonProps> = ({
         };
       case 'secondary':
         return {
-          backgroundColor: isDark ? 'rgba(255, 68, 68, 0.2)' : 'rgba(255, 68, 68, 0.1)',
+          backgroundColor: isDark
+            ? 'rgba(255, 68, 68, 0.2)'
+            : 'rgba(255, 68, 68, 0.1)',
           padding: 12,
           borderRadius: 8,
           alignItems: 'center' as const,
@@ -96,9 +107,7 @@ export const UserInfo: React.FC = () => {
 
   return (
     <View style={styles.userInfoContainer}>
-      <Text style={[styles.username, {color: colors.text}]}>
-        {user.name}
-      </Text>
+      <Text style={[styles.username, {color: colors.text}]}>{user.name}</Text>
       <Text style={[styles.email, {color: colors.text, opacity: 0.7}]}>
         {user.email}
       </Text>

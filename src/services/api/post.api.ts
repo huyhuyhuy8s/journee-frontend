@@ -1,14 +1,5 @@
-import apiClient from '@/utils/apiClient';
-import {IComment, IPost, IReaction, TReactionType} from '@/types';
-
-interface IApiResponse<T> {
-  meta: {
-    status: number;
-    message: string;
-    error?: string;
-  };
-  results?: T;
-}
+import apiClient from '@/utils/axiosInstance';
+import type {IComment, IPost, IReaction, TReactionType} from '@/types';
 
 interface IPostWithRelations extends IPost {
   comments: IComment[];
@@ -29,33 +20,34 @@ export class PostApiService {
   };
 
   getAllPosts = async (): Promise<IPostWithRelations[]> => {
-    const response = await apiClient.get<
-      IApiResponse<{ posts: IPostWithRelations[] }>
-    >('/posts');
-    return response.data.results!.posts;
+    const response =
+      await apiClient.get<{ posts: IPostWithRelations[] }>(
+        '/posts',
+      );
+    return response.results.posts;
   };
 
   getPostById = async (postId: string): Promise<IPostWithRelations> => {
     const response = await apiClient.get<
-      IApiResponse<{ post: IPostWithRelations }>
+      { post: IPostWithRelations }
     >(`/posts/${postId}`);
-    return response.data.results!.post;
+    return response.results.post;
   };
 
   createPost = async (
     caption: string,
     images?: string[],
-    journal?: any[]
+    journal?: string[],
   ): Promise<IPost> => {
-    const response = await apiClient.post<IApiResponse<{ post: IPost }>>(
+    const response = await apiClient.post<{ post: IPost }>(
       '/posts',
       {
         caption,
         image: images || [],
         journal: journal || [],
-      }
+      },
     );
-    return response.data.results!.post;
+    return response.results.post;
   };
 
   updatePost = async (
@@ -63,14 +55,14 @@ export class PostApiService {
     updates: {
       caption?: string;
       images?: string[];
-      journal?: any[];
-    }
+      journal?: string[];
+    },
   ): Promise<IPost> => {
-    const response = await apiClient.patch<IApiResponse<{ post: IPost }>>(
+    const response = await apiClient.patch<{ post: IPost }>(
       `/posts/${postId}`,
-      updates
+      updates,
     );
-    return response.data.results!.post;
+    return response.results.post;
   };
 
   deletePost = async (postId: string): Promise<void> => {
@@ -79,24 +71,22 @@ export class PostApiService {
 
   reactToPost = async (
     postId: string,
-    reactionType: TReactionType
+    reactionType: TReactionType,
   ): Promise<IReaction> => {
-    const response = await apiClient.post<IApiResponse<{ reaction: IReaction }>>(
-      `/posts/${postId}/react`,
-      {reactionType}
-    );
-    return response.data.results!.reaction;
+    const response = await apiClient.post<
+      { reaction: IReaction }
+    >(`/posts/${postId}/react`, {reactionType});
+    return response.results.reaction;
   };
 
   updateReaction = async (
     postId: string,
-    reactionType: TReactionType
+    reactionType: TReactionType,
   ): Promise<IReaction> => {
-    const response = await apiClient.patch<IApiResponse<{ reaction: IReaction }>>(
-      `/posts/${postId}/react`,
-      {reactionType}
-    );
-    return response.data.results!.reaction;
+    const response = await apiClient.patch<
+      { reaction: IReaction }
+    >(`/posts/${postId}/react`, {reactionType});
+    return response.results.reaction;
   };
 
   removeReaction = async (postId: string): Promise<void> => {
@@ -104,23 +94,23 @@ export class PostApiService {
   };
 
   addComment = async (postId: string, content: string): Promise<IComment> => {
-    const response = await apiClient.post<IApiResponse<{ comment: IComment }>>(
+    const response = await apiClient.post<{ comment: IComment }>(
       `/posts/${postId}/comment`,
-      {content}
+      {content},
     );
-    return response.data.results!.comment;
+    return response.results.comment;
   };
 
   updateComment = async (
     postId: string,
     commentId: string,
-    content: string
+    content: string,
   ): Promise<IComment> => {
-    const response = await apiClient.patch<IApiResponse<{ comment: IComment }>>(
+    const response = await apiClient.patch<{ comment: IComment }>(
       `/posts/${postId}/comment/${commentId}`,
-      {content}
+      {content},
     );
-    return response.data.results!.comment;
+    return response.results.comment;
   };
 
   deleteComment = async (postId: string, commentId: string): Promise<void> => {

@@ -1,4 +1,4 @@
-import {IThemeColors} from "@/theme/types";
+import type { IThemeColors } from '@/theme/types';
 
 export const darkColors: IThemeColors = {
   // Text shades: In Dark Mode, 100 is Darkest, 950 is Lightest
@@ -70,7 +70,7 @@ export const darkColors: IThemeColors = {
   accent800: 'oklch(0.87 0.10 84.33)',
   accent900: 'oklch(0.93 0.07 84.33)',
   accent950: 'oklch(0.97 0.04 84.33)',
-}
+};
 
 export const lightColors: IThemeColors = {
   // Text shades: In Light Mode, 100 is Lightest, 950 is Darkest
@@ -142,4 +142,4 @@ export const lightColors: IThemeColors = {
   accent800: 'oklch(0.51 0.14 87.5)',
   accent900: 'oklch(0.39 0.11 87.5)',
   accent950: 'oklch(0.29 0.08 87.5)', // Darkest
-}
+};

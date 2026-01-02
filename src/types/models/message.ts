@@ -1,5 +1,5 @@
-import {IEntry, IJournal, ILocation, TReactionType} from "@/types";
-import {Timestamp} from "@firebase/firestore";
+import type { IEntry, IJournal, ILocation, TReactionType } from '@/types';
+import type { Timestamp } from '@firebase/firestore';
 
 export type TMessageType =
   | string

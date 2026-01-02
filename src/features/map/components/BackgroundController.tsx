@@ -1,16 +1,16 @@
-import React, {useEffect, useState} from 'react';
-import {StyleSheet, View} from 'react-native';
-import {Badge, Button, Card, Text} from '@/components/global';
-import {useTheme} from '@/theme';
-import {useLocationState} from '@/contexts/LocationStateContext';
+import React, { useEffect, useState } from 'react';
+import { StyleSheet, View } from 'react-native';
+import { Badge, Button, Card, Text } from '@/components/global';
+import { useTheme } from '@/theme';
+import { useLocationState } from '@/contexts/LocationStateContext';
 import journalService from '@/services/journalService';
-import {formatInterval} from '@/utils/location';
-import {EUserLocationState} from "@/constants";
+import { formatInterval } from '@/utils/location';
+import { EUserLocationState } from '@/constants';
 
-const {FAST_MOVING, SLOW_MOVING, STATIONARY} = EUserLocationState
+const { FAST_MOVING, SLOW_MOVING, STATIONARY } = EUserLocationState;
 
 export const BackgroundController: React.FC = () => {
-  const {colors} = useTheme();
+  const { colors } = useTheme();
   const {
     isBackgroundStarted,
     startBackgroundTracking,
@@ -152,7 +152,7 @@ export const BackgroundController: React.FC = () => {
       <View style={styles.header}>
         <Text style={styles.title}>Background Tracking</Text>
         {unsyncedCount > 0 && (
-          <Badge text={`${unsyncedCount} unsynced`} variant="warning"/>
+          <Badge text={`${unsyncedCount} unsynced`} variant="warning" />
         )}
       </View>
 
@@ -160,7 +160,9 @@ export const BackgroundController: React.FC = () => {
         <View
           style={[
             styles.statusDot,
-            {backgroundColor: isBackgroundStarted ? '#10B981' : colors.text700}
+            {
+              backgroundColor: isBackgroundStarted ? '#10B981' : colors.text700,
+            },
           ]}
         />
         <Text style={styles.statusText}>
@@ -173,13 +175,20 @@ export const BackgroundController: React.FC = () => {
           <View style={styles.stateHeader}>
             <Text style={styles.stateEmoji}>{getStateEmoji(currentState)}</Text>
             <View style={styles.stateInfo}>
-              <Text style={styles.stateTitle}>{currentState.replace('_', ' ')}</Text>
+              <Text style={styles.stateTitle}>
+                {currentState.replace('_', ' ')}
+              </Text>
               <Text style={styles.stateInterval}>
                 Updates every {formatInterval(currentInterval)}
               </Text>
             </View>
           </View>
-          <View style={[styles.stateIndicator, {backgroundColor: getStateColor(currentState)}]}/>
+          <View
+            style={[
+              styles.stateIndicator,
+              { backgroundColor: getStateColor(currentState) },
+            ]}
+          />
         </View>
       )}
 

@@ -1,5 +1,4 @@
-// contexts/AppStateContext.tsx
-import React, { createContext, useContext, useState, ReactNode } from "react";
+import React, {createContext, type ReactNode, useContext, useState} from 'react';
 
 interface AppState {
   isLoading: boolean;
@@ -17,14 +16,14 @@ interface AppStateContextType {
 }
 
 const AppStateContext = createContext<AppStateContextType | undefined>(
-  undefined
+  undefined,
 );
 
 export const useAppState = (): AppStateContextType => {
   const context = useContext(AppStateContext);
   if (!context) {
-    console.error("❌ useAppState: No context found!"); // 🆕 Add debug
-    throw new Error("useAppState must be used within an AppStateProvider");
+    console.error('❌ useAppState: No context found!'); // 🆕 Add debug
+    throw new Error('useAppState must be used within an AppStateProvider');
   }
   return context;
 };
@@ -91,16 +90,16 @@ export const AppStateProvider: React.FC<AppStateProviderProps> = ({
 
 // Convenience hooks for specific states
 export const useIsLoading = () => {
-  const { appState } = useAppState();
+  const {appState} = useAppState();
   return appState.isLoading;
 };
 
 export const useError = () => {
-  const { appState } = useAppState();
+  const {appState} = useAppState();
   return appState.error;
 };
 
 export const useLoadingMessage = () => {
-  const { appState } = useAppState();
+  const {appState} = useAppState();
   return appState.loadingMessage;
 };
