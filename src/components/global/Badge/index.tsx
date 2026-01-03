@@ -11,7 +11,7 @@ const Badge = (props: IBadgeProps) => {
     badge: {
       padding: 4,
       borderRadius: 8,
-      backgroundColor: colors.accent,
+      backgroundColor: colors.yellow,
       justifyContent: 'center',
       alignItems: 'center',
     },

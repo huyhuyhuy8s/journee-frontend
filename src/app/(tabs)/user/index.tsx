@@ -1,17 +1,14 @@
 import Text from '@/components/global/Text';
-import { useTheme } from '@/theme';
-import { ScrollView, StyleSheet, View } from 'react-native';
-import { useAuth } from '@/contexts/AuthContext';
-import {
-  LogoutButton,
-  UserInfo,
-} from '@/features/users/components/AuthComponents';
-import { Button, SafeAreaView } from '@/components/global';
-import { useRouter } from 'expo-router';
+import {useTheme} from '@/theme';
+import {ScrollView, StyleSheet, View} from 'react-native';
+import {useAuth} from '@/contexts/AuthContext';
+import {LogoutButton, UserInfo} from '@/features/users/components/AuthComponents';
+import {Button, SafeAreaView} from '@/components/global';
+import {useRouter} from 'expo-router';
 
 const User = () => {
-  const { colors, isDark } = useTheme();
-  const { user, isAuthenticated } = useAuth();
+  const {colors, isDark} = useTheme();
+  const {user, isAuthenticated} = useAuth();
   const router = useRouter();
 
   const styles = StyleSheet.create({
@@ -24,10 +21,9 @@ const User = () => {
     },
     title: {
       fontSize: 28,
-      fontWeight: 'bold',
-      color: colors.text,
+      color: colors.green900,
       marginBottom: 16,
-      fontFamily: 'Whyte',
+      fontFamily: 'WhyteBold',
     },
     section: {
       marginBottom: 24,
@@ -39,8 +35,8 @@ const User = () => {
     },
     sectionTitle: {
       fontSize: 16,
-      fontWeight: '600',
-      color: colors.text,
+      fontFamily: 'WhyteBold',
+      color: colors.green900,
       marginBottom: 12,
       opacity: 0.8,
     },
@@ -50,14 +46,14 @@ const User = () => {
       marginBottom: 8,
     },
     label: {
-      color: colors.text,
+      color: colors.green900,
       opacity: 0.7,
       fontSize: 14,
     },
     value: {
-      color: colors.text,
-      fontWeight: '600',
+      color: colors.green900,
       fontSize: 14,
+      fontFamily: 'WhyteBold',
     },
   });
 
@@ -76,7 +72,7 @@ const User = () => {
       <ScrollView style={styles.container}>
         <View style={styles.header}>
           <Text style={styles.title}>Profile</Text>
-          <UserInfo />
+          <UserInfo/>
         </View>
 
         <View style={styles.section}>
@@ -104,7 +100,7 @@ const User = () => {
           onPress={() => router.navigate('/user/settings')}
         ></Button>
 
-        <LogoutButton variant="primary" />
+        <LogoutButton variant="primary"/>
       </ScrollView>
     </SafeAreaView>
   );

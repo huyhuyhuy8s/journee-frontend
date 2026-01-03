@@ -1,4 +1,3 @@
-import {v4 as uuidv4} from 'uuid';
 import {SAME_LOCATION_THRESHOLD} from '@/features/map/utils/constants';
 
 const calculateDistance = (
@@ -46,10 +45,7 @@ const formatInterval = (ms: number): string => {
   }
 };
 
-
-const generateId = (): string => {
-  return uuidv4();
-};
+const generateId = () => `${Date.now()}-${Math.random().toString(36).substring(2, 11)}`;
 
 const getTodayDateString = (): string => {
   const today = new Date();

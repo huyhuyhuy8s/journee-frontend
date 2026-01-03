@@ -153,7 +153,7 @@ const RegisterForm = () => {
         <MaterialIcons
           name={isSecurePassword ? 'visibility' : 'visibility-off'}
           size={24}
-          color={colors.text}
+          color={colors.green900}
           onPress={() => setIsSecurePassword(!isSecurePassword)}
           style={styles.securePassword}
         />
@@ -179,7 +179,7 @@ const RegisterForm = () => {
         <MaterialIcons
           name={isSecurePassword ? 'visibility' : 'visibility-off'}
           size={24}
-          color={colors.text}
+          color={colors.green900}
           onPress={() => setIsSecurePassword(!isSecurePassword)}
           style={styles.securePassword}
         />
@@ -225,7 +225,7 @@ const createStyles = (colors: IThemeColors) =>
       opacity: 0.8,
     },
     labelHighlight: {
-      color: colors.primary,
+      color: colors.yellow,
       fontWeight: 'bold',
     },
     input: {
@@ -243,7 +243,7 @@ const createStyles = (colors: IThemeColors) =>
       marginTop: 4,
     },
     button: {
-      backgroundColor: colors.primary,
+      backgroundColor: colors.yellow,
       borderRadius: 12,
       padding: 16,
       alignItems: 'center',

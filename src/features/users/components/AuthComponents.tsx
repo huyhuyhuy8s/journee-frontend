@@ -107,8 +107,8 @@ export const UserInfo: React.FC = () => {
 
   return (
     <View style={styles.userInfoContainer}>
-      <Text style={[styles.username, {color: colors.text}]}>{user.name}</Text>
-      <Text style={[styles.email, {color: colors.text, opacity: 0.7}]}>
+      <Text style={[styles.username, {color: colors.green900}]}>{user.name}</Text>
+      <Text style={[styles.email, {color: colors.green900, opacity: 0.7}]}>
         {user.email}
       </Text>
     </View>
@@ -121,7 +121,7 @@ const styles = StyleSheet.create({
   },
   username: {
     fontSize: 20,
-    fontWeight: 'bold',
+    fontFamily: 'WhyteBold',
     marginBottom: 4,
   },
   email: {
