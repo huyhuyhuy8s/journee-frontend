@@ -343,14 +343,11 @@ class JournalService {
           entries: (status.journal.entries || []).map((entry) => ({
             ...entry,
             arrivalTime:
-              entry.arrivalTime instanceof Date
-                ? entry.arrivalTime.getTime()
-                : entry.arrivalTime.toMillis(),
-            departureTime: entry.departureTime
-              ? entry.departureTime instanceof Date
+              entry.arrivalTime.getTime(),
+            departureTime:
+              entry.departureTime
                 ? entry.departureTime.getTime()
-                : entry.departureTime.toMillis()
-              : undefined,
+                : undefined,
             localId: entry.id || generateId(),
             synced: true,
             createdAt: Date.now(),

@@ -9,6 +9,7 @@ import globals from 'globals';
 export default [
   {
     ignores: [
+      'assets/icons/**',
       'dist/**',
       'node_modules/**',
       'coverage/**',

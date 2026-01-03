@@ -15,6 +15,7 @@ const {
   CURRENT_LOCATION,
   LAST_BACKGROUND_PROCESS,
   LAST_FOREGROUND_PROCESS,
+  LOCATION_DATA,
 } = ASYNC_STORAGE_KEYS;
 
 interface TLocationTaskData {
@@ -95,7 +96,7 @@ const syncForegroundLocationToBackend = async (
       //     .filter(Boolean)
       //     .join(', '),
       // );
-
+      await AsyncStorage.setItem(LOCATION_DATA, JSON.stringify(results[0]));
       await AsyncStorage.setItem(LAST_FOREGROUND_PROCESS, now.toString());
       console.info('🔄 Synced foreground location to backend');
     }

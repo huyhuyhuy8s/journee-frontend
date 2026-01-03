@@ -5,6 +5,7 @@ import {Button, Card, Text} from '@/components/global';
 import {useTheme} from '@/theme';
 import {useLocationState} from '@/contexts/LocationStateContext';
 import {ASYNC_STORAGE_KEYS} from '@/constants';
+import {LocationPin} from '@/assets/icons/pixelated';
 
 const {CURRENT_LOCATION} = ASYNC_STORAGE_KEYS;
 
@@ -75,6 +76,9 @@ export const ForegroundController: React.FC = () => {
   const styles = StyleSheet.create({
     container: {
       margin: 16,
+      paddingTop: 16,
+      paddingBottom: 16,
+      backgroundColor: colors.green,
     },
     header: {
       flexDirection: 'row',
@@ -84,7 +88,7 @@ export const ForegroundController: React.FC = () => {
     },
     title: {
       fontSize: 18,
-      fontWeight: '600',
+      fontFamily: 'WhyteBold',
       color: colors.green900,
     },
     pulseDot: {
@@ -108,12 +112,12 @@ export const ForegroundController: React.FC = () => {
       backgroundColor: colors.yellow,
     },
     infoCard: {
-      backgroundColor: colors.green100,
+      backgroundColor: colors.green,
       borderRadius: 12,
       padding: 16,
       marginBottom: 16,
       borderWidth: 1,
-      borderColor: colors.green100,
+      borderColor: colors.green400,
     },
     infoRow: {
       flexDirection: 'row',
@@ -123,8 +127,8 @@ export const ForegroundController: React.FC = () => {
     },
     infoLabel: {
       fontSize: 14,
-      color: colors.green,
-      fontWeight: '500',
+      color: colors.green800,
+      fontFamily: 'WhyteMedium',
     },
     infoValue: {
       fontSize: 14,
@@ -134,17 +138,18 @@ export const ForegroundController: React.FC = () => {
     },
     divider: {
       height: 1,
-      backgroundColor: colors.green,
+      backgroundColor: colors.green700,
     },
     placeholderCard: {
-      backgroundColor: colors.green100,
+      backgroundColor: colors.green200,
+      opacity: 0.75,
       borderRadius: 12,
       padding: 32,
       marginBottom: 16,
       alignItems: 'center',
-      borderWidth: 1,
-      borderColor: colors.green,
+      borderColor: colors.green400,
       borderStyle: 'dashed',
+      gap: 4,
     },
     placeholderIcon: {
       fontSize: 48,
@@ -152,12 +157,12 @@ export const ForegroundController: React.FC = () => {
     },
     placeholderText: {
       fontSize: 14,
-      color: colors.green,
+      color: colors.green900,
       textAlign: 'center',
     },
     permissionWarning: {
       fontSize: 12,
-      color: '#F59E0B',
+      color: colors.yellow,
       marginTop: 8,
       textAlign: 'center',
     },
@@ -211,7 +216,7 @@ export const ForegroundController: React.FC = () => {
 
       {!isForegroundStarted && (
         <View style={styles.placeholderCard}>
-          <Text style={styles.placeholderIcon}>📍</Text>
+          <LocationPin width={50} height={50} fill={colors.green900}/>
           <Text style={styles.placeholderText}>
             Start tracking to see your real-time location
           </Text>

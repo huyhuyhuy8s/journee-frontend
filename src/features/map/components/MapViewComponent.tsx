@@ -1,13 +1,13 @@
 import React from 'react';
-import { StyleSheet } from 'react-native';
-import MapView, { PROVIDER_GOOGLE } from 'react-native-maps';
-import { useRegion } from '@/contexts/RegionContext';
-import { useTheme } from '@/theme';
-import { getMapStyle } from '@/features/map/utils/mapStyles';
+import {StyleSheet} from 'react-native';
+import MapView, {PROVIDER_GOOGLE} from 'react-native-maps';
+import {useRegion} from '@/contexts/RegionContext';
+import {useTheme} from '@/theme';
+import {getMapStyle} from '@/features/map/utils/mapStyles';
 
 export const MapViewComponent = () => {
-  const { region } = useRegion();
-  const { isDark } = useTheme();
+  const {region} = useRegion();
+  const {isDark, colors} = useTheme();
 
   return (
     <MapView
@@ -29,8 +29,8 @@ export const MapViewComponent = () => {
       scrollEnabled={true}
       zoomEnabled={true}
       loadingEnabled={true}
-      loadingIndicatorColor={isDark ? '#ffffff' : '#000000'}
-      loadingBackgroundColor={isDark ? '#212121' : '#f5f5f5'}
+      loadingIndicatorColor={isDark ? colors.green700.toString() : colors.green200.toString()}
+      loadingBackgroundColor={isDark ? colors.green900.toString() : colors.green100.toString()}
     />
   );
 };

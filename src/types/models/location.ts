@@ -2,12 +2,15 @@ export interface ILocation {
   place?: string;
   street?: string;
   city?: string;
+  subregion?: string;
   region?: string;
   country?: string;
   value?: string;
-  coordinate: {
-    latitude: number;
-    longitude: number;
-    accuracy?: number;
-  };
+  coordinate: ICoordinate;
+}
+
+export interface ICoordinate {
+  latitude: number;
+  longitude: number;
+  accuracy?: number;
 }

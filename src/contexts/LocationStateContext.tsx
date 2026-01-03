@@ -6,10 +6,13 @@ import {AppState, type AppStateStatus} from 'react-native';
 import userLocationStateService from '@/services/userLocationStateService';
 import {ASYNC_STORAGE_KEYS, EUserLocationState, STATE_INTERVALS} from '@/constants';
 import {BACKGROUND_LOCATION_TASK, FOREGROUND_LOCATION_TASK} from '@/features/map/task';
+import {type ICoordinate, type ILocation} from '@/types';
 
-const {LOCATION_STATE_CHANGED} = ASYNC_STORAGE_KEYS;
+const {LOCATION_STATE_CHANGED, LOCATION_DATA, LAST_FOREGROUND_PROCESS} = ASYNC_STORAGE_KEYS;
 
 interface ILocationStateContext {
+  location: ILocation;
+  setLocation: React.Dispatch<React.SetStateAction<ILocation>>;
   isBackgroundStarted: boolean;
   startBackgroundTracking: () => Promise<void>;
   stopBackgroundTracking: () => Promise<void>;
@@ -44,6 +47,12 @@ interface ILocationStateProviderProps {
 export const LocationStateProvider: React.FC<ILocationStateProviderProps> = ({
   children,
 }) => {
+  const [location, setLocation] = useState<ILocation>({
+    coordinate: {
+      latitude: 0,
+      longitude: 0,
+    },
+  });
   const [isBackgroundStarted, setIsBackgroundStarted] =
     useState<boolean>(false);
   const [isForegroundStarted, setIsForegroundStarted] =
@@ -309,6 +318,34 @@ export const LocationStateProvider: React.FC<ILocationStateProviderProps> = ({
   }, []);
 
   useEffect(() => {
+    const a = async () => {
+      const storedLocationData = await AsyncStorage.getItem(LOCATION_DATA);
+      const lastForegroundProcess = await AsyncStorage.getItem(LAST_FOREGROUND_PROCESS);
+      if (storedLocationData && lastForegroundProcess) {
+        const parsedLocation: Location.LocationGeocodedAddress = JSON.parse(storedLocationData);
+        const parsedLastForegroundProcess: ICoordinate = JSON.parse(lastForegroundProcess);
+        console.warn(parsedLocation);
+        const {street, city, region, country, formattedAddress, name, subregion} = parsedLocation;
+        const newLocation: ILocation = {
+          place: name || undefined,
+          street: street || undefined,
+          city: city || undefined,
+          subregion: subregion || undefined,
+          region: region || undefined,
+          country: country || undefined,
+          value: formattedAddress || undefined,
+          coordinate: {
+            latitude: parsedLastForegroundProcess.latitude,
+            longitude: parsedLastForegroundProcess.longitude,
+          },
+        };
+        setLocation(newLocation);
+      }
+    };
+    void a();
+  }, []);
+
+  useEffect(() => {
     const checkStateChanged = async () => {
       const changed = await AsyncStorage.getItem(LOCATION_STATE_CHANGED);
       if (changed === 'true') {
@@ -338,6 +375,8 @@ export const LocationStateProvider: React.FC<ILocationStateProviderProps> = ({
   }, [handleAppStateChange, isForegroundStarted]);
 
   const value: ILocationStateContext = {
+    location,
+    setLocation,
     isBackgroundStarted,
     startBackgroundTracking,
     stopBackgroundTracking,

@@ -22,6 +22,7 @@ interface IRegionContext {
   setRegion: Dispatch<SetStateAction<IRegion>>;
   isLoading: boolean;
   setIsLoading: Dispatch<SetStateAction<boolean>>;
+  toUserRegion?: () => Promise<void>;
 }
 
 const RegionContext = createContext<IRegionContext>({
@@ -74,7 +75,17 @@ export const RegionProvider = (props: IRegionProviderProps) => {
     return () => clearInterval(interval);
   }, []);
 
-  const value = {region, setRegion, isLoading, setIsLoading};
+  const toUserRegion = async () => {
+    const userRegion = await AsyncStorage.getItem(CURRENT_LOCATION);
+    const lastProcessedRegion = regionRef.current;
+    console.info('User region', userRegion);
+    console.info('Last process region', lastProcessedRegion);
+    if (userRegion) {
+      setRegion(JSON.parse(userRegion) || lastProcessedRegion);
+    }
+  };
+
+  const value = {region, setRegion, isLoading, setIsLoading, toUserRegion};
 
   return (
     <RegionContext.Provider value={value}>
@@ -98,5 +109,6 @@ export const useRegion = () => {
     setRegion,
     isLoading: context.isLoading,
     setIsLoading,
+    toUserRegion: context.toUserRegion,
   };
 };

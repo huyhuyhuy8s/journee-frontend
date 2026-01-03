@@ -1,0 +1,24 @@
+export {default as Business} from './business.svg';
+export {default as Cloud} from './cloud.svg';
+export {default as Cybersecurity} from './cybersecurity.svg';
+export {default as DataScience} from './data-science.svg';
+export {default as Finance} from './finance.svg';
+export {default as Futurism} from './futurism.svg';
+export {default as Gaming} from './gaming.svg';
+export {default as HackernoonPurcat} from './hackernoon-purcat.svg';
+export {default as LifeHacking} from './life-hacking.svg';
+export {default as MachineLearning} from './machine-learning.svg';
+export {default as Management} from './management.svg';
+export {default as Media} from './media.svg';
+export {default as ProductManagement} from './product-management.svg';
+export {default as Programming} from './programming.svg';
+export {default as Remote} from './remote.svg';
+export {default as Science} from './science.svg';
+export {default as Society} from './society.svg';
+export {default as Startups} from './startups.svg';
+export {default as TechCompanies} from './tech-companies.svg';
+export {default as TechStories} from './tech-stories.svg';
+export {default as Technology} from './technology.svg';
+export {default as Web3} from './web3.svg';
+export {default as Writing} from './writing.svg';
+

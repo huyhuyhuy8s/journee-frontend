@@ -1,5 +1,4 @@
-import {Icon, Label, NativeTabs, VectorIcon} from 'expo-router/unstable-native-tabs';
-import {MaterialIcons} from '@expo/vector-icons/';
+import {Icon, Label, NativeTabs} from 'expo-router/unstable-native-tabs';
 import {useTheme} from '@/theme';
 
 const TabLayout = () => {
@@ -17,23 +16,23 @@ const TabLayout = () => {
     >
       <NativeTabs.Trigger name="newsfeed">
         <Label>Newsfeed</Label>
-        <Icon src={<VectorIcon family={MaterialIcons} name="newspaper"/>}/>
+        <Icon src={require('@/assets/icons/pixelated-png/for-light-mode/regular/newspaper.png')}/>
       </NativeTabs.Trigger>
       <NativeTabs.Trigger name="inbox">
         <Label>Inbox</Label>
-        <Icon src={<VectorIcon family={MaterialIcons} name="inbox"/>}/>
+        <Icon src={require('@/assets/icons/pixelated-png/for-light-mode/regular/message.png')}/>
       </NativeTabs.Trigger>
       <NativeTabs.Trigger name="index">
         <Label>Map</Label>
-        <Icon src={<VectorIcon family={MaterialIcons} name="map"/>}/>
+        <Icon src={require('@/assets/icons/pixelated-png/for-light-mode/regular/globe-americas.png')}/>
       </NativeTabs.Trigger>
       <NativeTabs.Trigger name="directory">
         <Label>Directory</Label>
-        <Icon src={<VectorIcon family={MaterialIcons} name="contacts"/>}/>
+        <Icon src={require('@/assets/icons/pixelated-png/for-light-mode/regular/users.png')}/>
       </NativeTabs.Trigger>
       <NativeTabs.Trigger name="user">
         <Label>User</Label>
-        <Icon src={<VectorIcon family={MaterialIcons} name="account-box"/>}/>
+        <Icon src={require('@/assets/icons/pixelated-png/for-light-mode/regular/user.png')}/>
       </NativeTabs.Trigger>
     </NativeTabs>
   );

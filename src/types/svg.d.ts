@@ -5,4 +5,3 @@ declare module '*.svg' {
   const content: ComponentType<SvgProps>;
   export default content;
 }
-

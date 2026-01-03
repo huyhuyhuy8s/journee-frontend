@@ -22,4 +22,5 @@ export const ASYNC_STORAGE_KEYS = {
   LOCATION_STATE_CHANGED: 'locationStateChanged',
   LAST_BACKGROUND_PROCESS: 'lastBackgroundProcess',
   LAST_FOREGROUND_PROCESS: 'lastForegroundProcess',
+  LOCATION_DATA: 'locationData',
 } as const;
