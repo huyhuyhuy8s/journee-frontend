@@ -72,6 +72,7 @@ export const LocationStateProvider: React.FC<ILocationStateProviderProps> = ({
         if (!granted) return;
       }
 
+      // Check if task is already running
       const isRegistered = await TaskManager.isTaskRegisteredAsync(
         BACKGROUND_LOCATION_TASK,
       );
@@ -80,6 +81,16 @@ export const LocationStateProvider: React.FC<ILocationStateProviderProps> = ({
         console.info('ℹ️ Background task already running');
         setIsBackgroundStarted(true);
         return;
+      }
+
+      // Verify task is defined
+      const taskDefined = TaskManager.isTaskDefined(
+        BACKGROUND_LOCATION_TASK,
+      );
+
+      if (!taskDefined) {
+        console.error('❌ Background location task is not defined');
+        throw new Error('Background location task is not defined. Please restart the app.');
       }
 
       const interval = await userLocationStateService.getCurrentInterval();
@@ -105,6 +116,7 @@ export const LocationStateProvider: React.FC<ILocationStateProviderProps> = ({
       );
     } catch (error) {
       console.error('❌ Error starting background tracking:', error);
+      setIsBackgroundStarted(false);
     }
   }, [hasBackgroundPermission]);
 
@@ -115,22 +127,45 @@ export const LocationStateProvider: React.FC<ILocationStateProviderProps> = ({
       );
 
       if (isRegistered) {
-        await Location.stopLocationUpdatesAsync(BACKGROUND_LOCATION_TASK);
-        console.info('⏹️ Background tracking stopped');
+        try {
+          await Location.stopLocationUpdatesAsync(BACKGROUND_LOCATION_TASK);
+          console.info('⏹️ Background tracking stopped');
+        } catch (stopError) {
+          // Handle Android SharedPreferences null reference error
+          // This can occur if the task wasn't properly initialized
+          const errorMessage = String(stopError);
+          if (errorMessage.includes('SharedPreferences') ||
+            errorMessage.includes('NullPointerException')) {
+            console.warn('⚠️ Task was already stopped or not properly initialized');
+            // Task is likely already stopped, just unregister it
+            await TaskManager.unregisterTaskAsync(BACKGROUND_LOCATION_TASK);
+          } else {
+            throw stopError;
+          }
+        }
       }
 
       setIsBackgroundStarted(false);
     } catch (error) {
       console.error('❌ Error stopping background tracking:', error);
+      // Ensure state is updated even if stop fails
+      setIsBackgroundStarted(false);
     }
   }, []);
 
   const restartBackgroundTracking = useCallback(async (): Promise<void> => {
     if (!isBackgroundStarted) return;
 
-    console.info('🔄 Restarting background tracking with new interval...');
-    await stopBackgroundTracking();
-    await startBackgroundTracking();
+    try {
+      console.info('🔄 Restarting background tracking with new interval...');
+      await stopBackgroundTracking();
+      // Small delay to ensure cleanup is complete
+      await new Promise(resolve => setTimeout(resolve, 300));
+      await startBackgroundTracking();
+      console.info('✅ Background tracking restarted');
+    } catch (error) {
+      console.error('❌ Error restarting background tracking:', error);
+    }
   }, [isBackgroundStarted, startBackgroundTracking, stopBackgroundTracking]);
 
   const startForegroundTracking = useCallback(async (): Promise<void> => {
@@ -140,6 +175,7 @@ export const LocationStateProvider: React.FC<ILocationStateProviderProps> = ({
         if (!granted) return;
       }
 
+      // Check if task is already running
       const isRegistered = await TaskManager.isTaskRegisteredAsync(
         FOREGROUND_LOCATION_TASK,
       );
@@ -148,6 +184,16 @@ export const LocationStateProvider: React.FC<ILocationStateProviderProps> = ({
         console.info('ℹ️ Foreground task already running');
         setIsForegroundStarted(true);
         return;
+      }
+
+      // Verify task is defined
+      const taskDefined = TaskManager.isTaskDefined(
+        FOREGROUND_LOCATION_TASK,
+      );
+
+      if (!taskDefined) {
+        console.error('❌ Foreground location task is not defined');
+        throw new Error('Foreground location task is not defined. Please restart the app.');
       }
 
       await Location.startLocationUpdatesAsync(FOREGROUND_LOCATION_TASK, {
@@ -161,6 +207,7 @@ export const LocationStateProvider: React.FC<ILocationStateProviderProps> = ({
       console.info('✅ Foreground tracking started');
     } catch (error) {
       console.error('❌ Error starting foreground tracking:', error);
+      setIsForegroundStarted(false);
     }
   }, [hasLocationPermission]);
 
@@ -171,22 +218,45 @@ export const LocationStateProvider: React.FC<ILocationStateProviderProps> = ({
       );
 
       if (isRegistered) {
-        await Location.stopLocationUpdatesAsync(FOREGROUND_LOCATION_TASK);
-        console.info('⏹️ Foreground tracking stopped');
+        try {
+          await Location.stopLocationUpdatesAsync(FOREGROUND_LOCATION_TASK);
+          console.info('⏹️ Foreground tracking stopped');
+        } catch (stopError) {
+          // Handle Android SharedPreferences null reference error
+          // This can occur if the task wasn't properly initialized
+          const errorMessage = String(stopError);
+          if (errorMessage.includes('SharedPreferences') ||
+            errorMessage.includes('NullPointerException')) {
+            console.warn('⚠️ Task was already stopped or not properly initialized');
+            // Task is likely already stopped, just unregister it
+            await TaskManager.unregisterTaskAsync(FOREGROUND_LOCATION_TASK);
+          } else {
+            throw stopError;
+          }
+        }
       }
 
       setIsForegroundStarted(false);
     } catch (error) {
       console.error('❌ Error stopping foreground tracking:', error);
+      // Ensure state is updated even if stop fails
+      setIsForegroundStarted(false);
     }
   }, []);
 
   const restartForegroundTracking = useCallback(async (): Promise<void> => {
     if (!isForegroundStarted) return;
 
-    await stopForegroundTracking();
-    await startForegroundTracking();
-    console.info('🔄 Foreground tracking restarted');
+    try {
+      console.info('🔄 Restarting foreground tracking...');
+      await stopForegroundTracking();
+      // Small delay to ensure cleanup is complete
+      await new Promise(resolve => setTimeout(resolve, 300));
+      await startForegroundTracking();
+      console.info('✅ Foreground tracking restarted');
+    } catch (error) {
+      console.error('❌ Error restarting foreground tracking:', error);
+    }
   }, [isForegroundStarted, startForegroundTracking, stopForegroundTracking]);
 
   const handleAppStateChange = useCallback(async (

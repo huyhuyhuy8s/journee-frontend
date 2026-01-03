@@ -60,7 +60,7 @@ export const BackgroundController: React.FC = () => {
       case STATIONARY:
         return '#10B981';
       default:
-        return colors.text700.toString();
+        return colors.green.toString();
     }
   };
 
@@ -90,7 +90,7 @@ export const BackgroundController: React.FC = () => {
     title: {
       fontSize: 18,
       fontWeight: '600',
-      color: colors.text,
+      color: colors.green900,
     },
     statusContainer: {
       flexDirection: 'row',
@@ -105,15 +105,15 @@ export const BackgroundController: React.FC = () => {
     },
     statusText: {
       fontSize: 14,
-      color: colors.text600,
+      color: colors.green,
     },
     stateCard: {
-      backgroundColor: colors.background700,
+      backgroundColor: colors.green,
       borderRadius: 12,
       padding: 12,
       marginBottom: 16,
       borderWidth: 1,
-      borderColor: colors.background600,
+      borderColor: colors.green,
     },
     stateHeader: {
       flexDirection: 'row',
@@ -129,12 +129,12 @@ export const BackgroundController: React.FC = () => {
     stateTitle: {
       fontSize: 16,
       fontWeight: '600',
-      color: colors.text,
+      color: colors.green900,
       textTransform: 'capitalize',
     },
     stateInterval: {
       fontSize: 13,
-      color: colors.text600,
+      color: colors.green,
       marginTop: 2,
     },
     stateIndicator: {
@@ -164,7 +164,7 @@ export const BackgroundController: React.FC = () => {
           style={[
             styles.statusDot,
             {
-              backgroundColor: isBackgroundStarted ? '#10B981' : colors.text700,
+              backgroundColor: isBackgroundStarted ? '#10B981' : colors.green,
             },
           ]}
         />

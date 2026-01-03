@@ -38,7 +38,7 @@ const Login = () => {
             <MaterialIcons
               name="share-location"
               size={128}
-              color={colors.primary}
+              color={colors.yellow}
             />
           </View>
 
@@ -70,18 +70,18 @@ const createStyles = (colors: IThemeColors) =>
     title: {
       fontSize: 36,
       fontWeight: 'bold',
-      color: colors.text,
+      color: colors.green900,
       marginBottom: 8,
       fontFamily: 'Whyte',
     },
     subtitle: {
       fontSize: 16,
-      color: colors.text,
+      color: colors.green900,
       opacity: 0.7,
     },
     link: {
-      color: colors.primary,
-      fontWeight: 'bold',
+      color: colors.yellow,
+      fontFamily: 'WhyteBold',
     },
     footer: {
       alignItems: 'center',
@@ -89,7 +89,7 @@ const createStyles = (colors: IThemeColors) =>
     },
     footerText: {
       fontSize: 14,
-      color: colors.text,
+      color: colors.green900,
       opacity: 0.7,
     },
   });

@@ -73,7 +73,7 @@ const LoginForm = () => {
         <TextInput
           style={[styles.input, errors.password && styles.inputError]}
           placeholder="Enter your password"
-          placeholderTextColor={colors.background700}
+          placeholderTextColor={colors.green}
           value={password}
           onChangeText={setPassword}
           secureTextEntry={isSecurePassword}
@@ -89,7 +89,7 @@ const LoginForm = () => {
           <MaterialIcons
             name={isSecurePassword ? 'visibility' : 'visibility-off'}
             size={24}
-            color={colors.text}
+            color={colors.green900}
           />
         </TouchableOpacity>
         {errors.password && (
@@ -125,18 +125,15 @@ const createStyles = (colors: IThemeColors) =>
     label: {
       fontSize: 14,
       fontWeight: '600',
-      color: colors.text,
+      color: colors.green900,
       marginBottom: 8,
       opacity: 0.8,
     },
     input: {
-      backgroundColor: colors.background700,
       borderRadius: 12,
       padding: 16,
       fontSize: 16,
-      color: colors.text,
       borderWidth: 1,
-      borderColor: colors.background700,
     },
     inputError: {
       borderColor: '#ff4444',
@@ -147,7 +144,7 @@ const createStyles = (colors: IThemeColors) =>
       marginTop: 4,
     },
     button: {
-      backgroundColor: colors.primary,
+      backgroundColor: colors.yellow,
       borderRadius: 12,
       padding: 16,
       alignItems: 'center',
@@ -162,7 +159,7 @@ const createStyles = (colors: IThemeColors) =>
       fontWeight: 'bold',
     },
     link: {
-      color: colors.primary,
+      color: colors.yellow,
       fontWeight: 'bold',
     },
     securePassword: {

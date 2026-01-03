@@ -11,10 +11,11 @@ const Text = (props: ITextProps) => {
     () =>
       StyleSheet.create({
         text: {
-          color: colors.text,
+          color: colors.green900,
+          fontFamily: 'WhyteBook',
         },
       }),
-    [colors.text],
+    [colors.green900],
   );
 
   return (

@@ -1,20 +1,14 @@
-import React, { useMemo } from 'react';
-import {
-  KeyboardAvoidingView,
-  Platform,
-  ScrollView,
-  StyleSheet,
-  View,
-} from 'react-native';
-import { Link } from 'expo-router';
-import { useTheme } from '@/theme';
-import { MaterialIcons } from '@expo/vector-icons';
-import { SafeAreaView, Text } from '@/components/global';
+import React, {useMemo} from 'react';
+import {KeyboardAvoidingView, Platform, ScrollView, StyleSheet, View} from 'react-native';
+import {Link} from 'expo-router';
+import {useTheme} from '@/theme';
+import {MaterialIcons} from '@expo/vector-icons';
+import {SafeAreaView, Text} from '@/components/global';
 import RegisterForm from '@/features/auth/components/RegisterForm';
-import type { IThemeColors } from '@/theme/types';
+import type {IThemeColors} from '@/theme/types';
 
 const Register = () => {
-  const { colors } = useTheme();
+  const {colors} = useTheme();
 
   const styles = useMemo(() => createStyles(colors), [colors]);
 
@@ -22,7 +16,7 @@ const Register = () => {
     <SafeAreaView>
       <KeyboardAvoidingView
         behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
-        style={{ flex: 1 }}
+        style={{flex: 1}}
       >
         <ScrollView
           contentContainerStyle={styles.scrollContent}
@@ -33,11 +27,11 @@ const Register = () => {
             <MaterialIcons
               name="share-location"
               size={128}
-              color={colors.primary}
+              color={colors.yellow}
             />
           </View>
 
-          <RegisterForm />
+          <RegisterForm/>
 
           <View style={styles.footer}>
             <Text style={styles.footerText}>
@@ -59,7 +53,7 @@ const createStyles = (colors: IThemeColors) =>
   StyleSheet.create({
     container: {
       flex: 1,
-      backgroundColor: colors.background,
+      backgroundColor: colors.green900,
     },
     scrollContent: {
       flexGrow: 1,
@@ -74,13 +68,13 @@ const createStyles = (colors: IThemeColors) =>
     title: {
       fontSize: 36,
       fontWeight: 'bold',
-      color: colors.text,
+      color: colors.green900,
       marginBottom: 8,
       fontFamily: 'Whyte',
     },
     subtitle: {
       fontSize: 16,
-      color: colors.text,
+      color: colors.green900,
       opacity: 0.7,
     },
     footer: {
@@ -89,11 +83,11 @@ const createStyles = (colors: IThemeColors) =>
     },
     footerText: {
       fontSize: 14,
-      color: colors.text,
+      color: colors.green900,
       opacity: 0.7,
     },
     link: {
-      color: colors.primary,
+      color: colors.yellow,
       fontWeight: 'bold',
     },
   });

@@ -13,13 +13,13 @@ const Button = (props: IButtonProps) => {
       padding: 12,
       borderRadius: 8,
       borderWidth: 1,
-      borderColor: colors.text700,
-      backgroundColor: colors.background100,
+      borderColor: colors.green,
+      backgroundColor: colors.green100,
       alignItems: 'center',
       justifyContent: 'center',
     },
     text: {
-      fontWeight: 'bold',
+      fontFamily: 'WhyteBold',
     },
   });
 

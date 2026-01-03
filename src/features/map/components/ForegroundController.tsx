@@ -85,7 +85,7 @@ export const ForegroundController: React.FC = () => {
     title: {
       fontSize: 18,
       fontWeight: '600',
-      color: colors.text,
+      color: colors.green900,
     },
     pulseDot: {
       width: 24,
@@ -98,22 +98,22 @@ export const ForegroundController: React.FC = () => {
       width: 24,
       height: 24,
       borderRadius: 12,
-      backgroundColor: colors.primary,
+      backgroundColor: colors.yellow,
       opacity: 0.3,
     },
     dot: {
       width: 12,
       height: 12,
       borderRadius: 6,
-      backgroundColor: colors.primary,
+      backgroundColor: colors.yellow,
     },
     infoCard: {
-      backgroundColor: colors.background100,
+      backgroundColor: colors.green100,
       borderRadius: 12,
       padding: 16,
       marginBottom: 16,
       borderWidth: 1,
-      borderColor: colors.background100,
+      borderColor: colors.green100,
     },
     infoRow: {
       flexDirection: 'row',
@@ -123,27 +123,27 @@ export const ForegroundController: React.FC = () => {
     },
     infoLabel: {
       fontSize: 14,
-      color: colors.text600,
+      color: colors.green,
       fontWeight: '500',
     },
     infoValue: {
       fontSize: 14,
-      color: colors.text,
+      color: colors.green900,
       fontWeight: '600',
       fontFamily: 'monospace',
     },
     divider: {
       height: 1,
-      backgroundColor: colors.background600,
+      backgroundColor: colors.green,
     },
     placeholderCard: {
-      backgroundColor: colors.background100,
+      backgroundColor: colors.green100,
       borderRadius: 12,
       padding: 32,
       marginBottom: 16,
       alignItems: 'center',
       borderWidth: 1,
-      borderColor: colors.background600,
+      borderColor: colors.green,
       borderStyle: 'dashed',
     },
     placeholderIcon: {
@@ -152,7 +152,7 @@ export const ForegroundController: React.FC = () => {
     },
     placeholderText: {
       fontSize: 14,
-      color: colors.text600,
+      color: colors.green,
       textAlign: 'center',
     },
     permissionWarning: {
