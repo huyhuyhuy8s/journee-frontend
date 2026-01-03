@@ -9,7 +9,7 @@ import type {IThemeColors} from '@/theme/types';
 
 const Login = () => {
   const {colors} = useTheme();
-  const styles = useMemo(() => creatStyles(colors), [colors]);
+  const styles = useMemo(() => createStyles(colors), [colors]);
 
   const SignUpLink = () => {
     return (
@@ -53,7 +53,7 @@ const Login = () => {
 
 export default Login;
 
-const creatStyles = (colors: IThemeColors) =>
+const createStyles = (colors: IThemeColors) =>
   StyleSheet.create({
     keyAvoidView: {
       flex: 1,

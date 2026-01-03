@@ -1,10 +1,11 @@
-import { SAME_LOCATION_THRESHOLD } from '@/features/map/utils/constants';
+import {v4 as uuidv4} from 'uuid';
+import {SAME_LOCATION_THRESHOLD} from '@/features/map/utils/constants';
 
 const calculateDistance = (
   lat1: number,
   lon1: number,
   lat2: number,
-  lon2: number
+  lon2: number,
 ): number => {
   const R = 6371;
   const dLat = toRad(lat2 - lat1);
@@ -13,9 +14,9 @@ const calculateDistance = (
   const a =
     Math.sin(dLat / 2) * Math.sin(dLat / 2) +
     Math.cos(toRad(lat1)) *
-      Math.cos(toRad(lat2)) *
-      Math.sin(dLon / 2) *
-      Math.sin(dLon / 2);
+    Math.cos(toRad(lat2)) *
+    Math.sin(dLon / 2) *
+    Math.sin(dLon / 2);
 
   const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
   return R * c;
@@ -29,7 +30,7 @@ const isSameLocation = (
   lat1: number,
   lon1: number,
   lat2: number,
-  lon2: number
+  lon2: number,
 ): boolean => {
   const distance = calculateDistance(lat1, lon1, lat2, lon2);
   return distance < SAME_LOCATION_THRESHOLD;
@@ -45,15 +46,17 @@ const formatInterval = (ms: number): string => {
   }
 };
 
-// ################
-const formatCoordinate = (number: number) => number; // "10.762622"
 
 const generateId = (): string => {
-  return `${Date.now()}_${Math.random().toString(36).slice(2, 11)}`;
+  return uuidv4();
 };
+
 const getTodayDateString = (): string => {
   const today = new Date();
-  return today.toISOString().split('T')[0];
+  const year = today.getFullYear();
+  const month = String(today.getMonth() + 1).padStart(2, '0');
+  const day = String(today.getDate()).padStart(2, '0');
+  return `${year}-${month}-${day}`;
 };
 
 export {
@@ -62,7 +65,6 @@ export {
   isSameLocation,
   generateId,
   formatInterval,
-  formatCoordinate,
   getTodayDateString,
 };
 

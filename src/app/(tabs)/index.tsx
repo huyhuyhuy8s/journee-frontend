@@ -1,23 +1,24 @@
-import { StyleSheet, View } from 'react-native';
-import { MapViewComponent, RegionComponent } from '@/features/map/components';
+import {StyleSheet, View} from 'react-native';
+import {MapViewComponent, RegionComponent} from '@/features/map/components';
 
 const MapTab = () => {
-  const styles = StyleSheet.create({
-    mapItems: {
-      position: 'absolute',
-      top: 50,
-      left: 0,
-    },
-  });
 
   return (
     <View>
-      <MapViewComponent />
+      <MapViewComponent/>
       <View style={styles.mapItems}>
-        <RegionComponent />
+        <RegionComponent/>
       </View>
     </View>
   );
 };
 
 export default MapTab;
+
+const styles = StyleSheet.create({
+  mapItems: {
+    position: 'absolute',
+    top: 50,
+    left: 0,
+  },
+});

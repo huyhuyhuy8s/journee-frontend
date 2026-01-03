@@ -1,17 +1,21 @@
-import React from 'react';
-import { useTheme } from '@/theme';
-import { StyleSheet, Text as T } from 'react-native';
-import type { ITextProps } from '@/components/global/Text/types';
+import React, {useMemo} from 'react';
+import {useTheme} from '@/theme';
+import {StyleSheet, Text as T} from 'react-native';
+import type {ITextProps} from '@/components/global/Text/types';
 
 const Text = (props: ITextProps) => {
-  const { colors } = useTheme();
-  const { style, ...restProps } = props;
+  const {colors} = useTheme();
+  const {style, ...restProps} = props;
 
-  const styles = StyleSheet.create({
-    text: {
-      color: colors.text,
-    },
-  });
+  const styles = useMemo(
+    () =>
+      StyleSheet.create({
+        text: {
+          color: colors.text,
+        },
+      }),
+    [colors.text],
+  );
 
   return (
     <T style={[styles.text, style]} {...restProps}>

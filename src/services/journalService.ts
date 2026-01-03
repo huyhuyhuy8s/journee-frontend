@@ -1,16 +1,10 @@
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import * as Location from 'expo-location';
 import {Timestamp} from '@firebase/firestore';
-import type {IEntry, IJournal, ILocation} from '@/types';
+import type {IEntry, IJournal, ILocation, IPendingVisit} from '@/types';
 import {ASYNC_STORAGE_KEYS, MIN_VISIT_DURATION} from '@/constants';
 import {journalApiService} from '@/services/api';
 import {generateId, getTodayDateString, isSameLocation} from '@/utils/location';
-
-interface IPendingVisit {
-  location: Location.LocationObject;
-  startTime: number;
-  lastUpdateTime: number;
-}
 
 interface ILocalJournal extends Omit<
   IJournal,

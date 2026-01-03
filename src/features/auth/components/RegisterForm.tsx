@@ -93,8 +93,9 @@ const RegisterForm = () => {
       );
       router.replace('/login');
     } catch (error: unknown) {
-      const err = error as IResponseError;
-      Alert.alert('Registration Failed', err.meta.message);
+      const err = error as Partial<IResponseError>;
+      const message = err?.meta?.message ?? 'An unexpected error occurred. Please try again.';
+      Alert.alert('Registration Failed', message);
     }
   };
 
