@@ -78,17 +78,23 @@ axiosInstance.interceptors.response.use(
       }
 
       return Promise.reject({
-        status: meta.status,
-        message: meta.message || 'An error occurred',
-        error: meta.error || 'Unknown error',
-      });
+        meta: {
+          status: meta.status,
+          message: meta.message || 'An error occurred',
+          error: meta.error || 'Unknown error',
+        },
+        results: null,
+      } as IResponseError);
     } else {
       console.error('Response setup error:', error);
       return Promise.reject({
-        status: 500,
-        message: 'Network error or server not responding',
-        error: error.message || 'Unknown error',
-      });
+        meta: {
+          status: 500,
+          message: 'Network error or server not responding',
+          error: error.message || 'Unknown error',
+        },
+        results: null,
+      } as IResponseError);
     }
   },
 );

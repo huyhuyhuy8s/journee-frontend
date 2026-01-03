@@ -5,7 +5,7 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 import {isUndefined} from 'lodash';
 import {ASYNC_STORAGE_KEYS, DEFAULT_BACKEND_RESPONSE, STORAGE_KEYS} from '@/constants/global';
 import apiClient from '@/utils/axiosInstance';
-import {ToastAndroid} from 'react-native';
+import {Alert, Platform, ToastAndroid} from 'react-native';
 
 const {AUTH_TOKEN} = STORAGE_KEYS;
 const {USER_DATA: ASYNC_USER_DATA} = ASYNC_STORAGE_KEYS;
@@ -79,18 +79,36 @@ export const AuthProvider = (props: IAuthProviderProps) => {
         avatar: results.avatar,
       };
 
-      if (token) await SecureStore.setItemAsync(AUTH_TOKEN, token);
-      await AsyncStorage.setItem(ASYNC_USER_DATA, JSON.stringify(user));
+      if (!token) {
+        console.error('Unable to login');
+        return {
+          results: null,
+          meta: {
+            status: 401,
+            error: 'Unauthorized',
+            message: 'No token provided',
+          },
+        };
+      }
 
+      await SecureStore.setItemAsync(AUTH_TOKEN, token);
+      await AsyncStorage.setItem(ASYNC_USER_DATA, JSON.stringify(results));
       setUser(user);
       setIsAuthenticated(true);
+
       return response;
     } catch (error: unknown) {
       const err = (error as IResponseError);
-      ToastAndroid.show(
-        `Error when logging ${err.meta.status} ${err.meta.error}: ${err.meta.message}`,
-        ToastAndroid.LONG,
-      );
+      if (Platform.OS === 'android')
+        ToastAndroid.show(
+          `Error when login ${err.meta.status}: ${err.meta.error}, ${err.meta.message}`,
+          ToastAndroid.LONG,
+        );
+      else
+        Alert.alert(
+          'Login error',
+          `${err.meta.status}: ${err.meta.error}, ${err.meta.message}`,
+        );
       return err;
     } finally {
       setIsLoading(false);

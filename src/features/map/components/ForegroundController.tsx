@@ -1,13 +1,12 @@
-import React, { useEffect, useState } from 'react';
-import { StyleSheet, View } from 'react-native';
+import React, {useEffect, useState} from 'react';
+import {StyleSheet, View} from 'react-native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
-import { Button, Card, Text } from '@/components/global';
-import { useTheme } from '@/theme';
-import { useLocationState } from '@/contexts/LocationStateContext';
-import { ASYNC_STORAGE_KEYS } from '@/constants';
-import { formatCoordinate } from '@/utils/location';
+import {Button, Card, Text} from '@/components/global';
+import {useTheme} from '@/theme';
+import {useLocationState} from '@/contexts/LocationStateContext';
+import {ASYNC_STORAGE_KEYS} from '@/constants';
 
-const { CURRENT_LOCATION } = ASYNC_STORAGE_KEYS;
+const {CURRENT_LOCATION} = ASYNC_STORAGE_KEYS;
 
 interface ICurrentLocation {
   latitude: number;
@@ -16,7 +15,7 @@ interface ICurrentLocation {
 }
 
 export const ForegroundController: React.FC = () => {
-  const { colors } = useTheme();
+  const {colors} = useTheme();
   const {
     isForegroundStarted,
     startForegroundTracking,
@@ -170,8 +169,8 @@ export const ForegroundController: React.FC = () => {
         <Text style={styles.title}>Live Location</Text>
         {isForegroundStarted && (
           <View style={styles.pulseDot}>
-            <View style={styles.pulse} />
-            <View style={styles.dot} />
+            <View style={styles.pulse}/>
+            <View style={styles.dot}/>
           </View>
         )}
       </View>
@@ -181,27 +180,27 @@ export const ForegroundController: React.FC = () => {
           <View style={styles.infoRow}>
             <Text style={styles.infoLabel}>Latitude</Text>
             <Text style={styles.infoValue}>
-              {formatCoordinate(currentLocation.latitude)}
+              {currentLocation.latitude}
             </Text>
           </View>
 
-          <View style={styles.divider} />
+          <View style={styles.divider}/>
 
           <View style={styles.infoRow}>
             <Text style={styles.infoLabel}>Longitude</Text>
             <Text style={styles.infoValue}>
-              {formatCoordinate(currentLocation.longitude)}
+              {currentLocation.longitude}
             </Text>
           </View>
 
-          <View style={styles.divider} />
+          <View style={styles.divider}/>
 
           <View style={styles.infoRow}>
             <Text style={styles.infoLabel}>Updates</Text>
             <Text style={styles.infoValue}>{updateCount}</Text>
           </View>
 
-          <View style={styles.divider} />
+          <View style={styles.divider}/>
 
           <View style={styles.infoRow}>
             <Text style={styles.infoLabel}>Last Update</Text>

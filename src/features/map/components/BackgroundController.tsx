@@ -1,16 +1,16 @@
-import React, { useEffect, useState } from 'react';
-import { StyleSheet, View } from 'react-native';
-import { Badge, Button, Card, Text } from '@/components/global';
-import { useTheme } from '@/theme';
-import { useLocationState } from '@/contexts/LocationStateContext';
+import React, {useEffect, useState} from 'react';
+import {Alert, StyleSheet, View} from 'react-native';
+import {Badge, Button, Card, Text} from '@/components/global';
+import {useTheme} from '@/theme';
+import {useLocationState} from '@/contexts/LocationStateContext';
 import journalService from '@/services/journalService';
-import { formatInterval } from '@/utils/location';
-import { EUserLocationState } from '@/constants';
+import {formatInterval} from '@/utils/location';
+import {EUserLocationState} from '@/constants';
 
-const { FAST_MOVING, SLOW_MOVING, STATIONARY } = EUserLocationState;
+const {FAST_MOVING, SLOW_MOVING, STATIONARY} = EUserLocationState;
 
 export const BackgroundController: React.FC = () => {
-  const { colors } = useTheme();
+  const {colors} = useTheme();
   const {
     isBackgroundStarted,
     startBackgroundTracking,
@@ -36,7 +36,10 @@ export const BackgroundController: React.FC = () => {
     if (!hasBackgroundPermission) {
       const granted = await requestPermissions();
       if (!granted) {
-        alert('Background location permission is required for tracking');
+        Alert.alert(
+          'Permission Required',
+          'Background location permission is required to start tracking.',
+        );
         return;
       }
     }
@@ -152,7 +155,7 @@ export const BackgroundController: React.FC = () => {
       <View style={styles.header}>
         <Text style={styles.title}>Background Tracking</Text>
         {unsyncedCount > 0 && (
-          <Badge text={`${unsyncedCount} unsynced`} variant="warning" />
+          <Badge text={`${unsyncedCount} unsynced`} variant="warning"/>
         )}
       </View>
 
@@ -186,7 +189,7 @@ export const BackgroundController: React.FC = () => {
           <View
             style={[
               styles.stateIndicator,
-              { backgroundColor: getStateColor(currentState) },
+              {backgroundColor: getStateColor(currentState)},
             ]}
           />
         </View>
