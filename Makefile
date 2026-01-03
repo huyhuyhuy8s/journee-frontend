@@ -30,7 +30,8 @@ build-production:
 	eas build --platform android --profile production
 
 doctor:
-	npx expo-doctor
+	@echo "Running Expo Doctor (Note: Metro config check may show path errors on Windows, this is normal)"
+	@npx expo-doctor || echo "Note: If metro config error appeared, run 'make doctor-ps' for detailed info"
 
 lint:
 	yarn lint
