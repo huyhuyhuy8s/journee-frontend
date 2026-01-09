@@ -76,15 +76,14 @@ export const ForegroundController: React.FC = () => {
   const styles = StyleSheet.create({
     container: {
       margin: 16,
-      paddingTop: 16,
-      paddingBottom: 16,
-      backgroundColor: colors.green,
+      backgroundColor: colors.green250,
     },
     header: {
       flexDirection: 'row',
       justifyContent: 'space-between',
       alignItems: 'center',
       marginBottom: 16,
+      gap: 4,
     },
     title: {
       fontSize: 18,
@@ -112,7 +111,8 @@ export const ForegroundController: React.FC = () => {
       backgroundColor: colors.yellow,
     },
     infoCard: {
-      backgroundColor: colors.green,
+      width: '100%',
+      backgroundColor: colors.green200,
       borderRadius: 12,
       padding: 16,
       marginBottom: 16,
@@ -133,8 +133,7 @@ export const ForegroundController: React.FC = () => {
     infoValue: {
       fontSize: 14,
       color: colors.green900,
-      fontWeight: '600',
-      fontFamily: 'monospace',
+      fontFamily: 'PPNeueMontrealRegular',
     },
     divider: {
       height: 1,
@@ -147,9 +146,9 @@ export const ForegroundController: React.FC = () => {
       padding: 32,
       marginBottom: 16,
       alignItems: 'center',
-      borderColor: colors.green400,
+      borderColor: colors.green700,
       borderStyle: 'dashed',
-      gap: 4,
+      gap: 12,
     },
     placeholderIcon: {
       fontSize: 48,

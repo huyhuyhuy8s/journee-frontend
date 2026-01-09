@@ -12,7 +12,6 @@ import type {IResponse, IResponseError} from '@/types';
 
 const {AUTH_TOKEN} = STORAGE_KEYS;
 
-// Custom API client interface that returns unwrapped data
 interface CustomAxiosInstance extends Omit<AxiosInstance, 'get' | 'post' | 'put' | 'patch' | 'delete'> {
   get<T = unknown>(url: string, config?: AxiosRequestConfig): Promise<IResponse<T>>;
 

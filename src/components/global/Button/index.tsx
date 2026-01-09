@@ -6,7 +6,7 @@ import Text from '@/components/global/Text';
 
 const Button = (props: IButtonProps) => {
   const {colors} = useTheme();
-  const {style, title, onPress, disabled, variant, ...restProps} = props;
+  const {style, title, onPress, disabled, variant, children, ...restProps} = props;
 
   const styles = StyleSheet.create({
     container: {
@@ -34,7 +34,7 @@ const Button = (props: IButtonProps) => {
         backgroundColor: colors.yellow,
       },
       text: {
-        color: colors.yellow100,
+        color: colors.green900,
       },
     },
     danger: {
@@ -43,7 +43,7 @@ const Button = (props: IButtonProps) => {
         backgroundColor: colors.orange,
       },
       text: {
-        color: colors.orange900,
+        color: colors.green900,
       },
     },
     secondary: {
@@ -52,12 +52,12 @@ const Button = (props: IButtonProps) => {
         backgroundColor: colors.navy100,
       },
       text: {
-        color: colors.navy900,
+        color: colors.green900,
       },
     },
     outline: {
       container: {
-        borderColor: colors.green,
+        borderColor: colors.green100,
         borderWidth: 2,
         borderStyle: 'dashed',
         backgroundColor: 'transparent',
@@ -72,7 +72,7 @@ const Button = (props: IButtonProps) => {
         backgroundColor: colors.salmon100,
       },
       text: {
-        color: colors.salmon900,
+        color: colors.green900,
       },
     },
   };
@@ -89,17 +89,30 @@ const Button = (props: IButtonProps) => {
 
   const textStyle = [styles.text, vStyle.text];
 
-  return (
-    <TouchableOpacity
-      activeOpacity={0.8}
-      onPress={onPress}
-      disabled={disabled}
-      style={containerStyle}
-      {...restProps}
-    >
-      <Text style={textStyle}>{title}</Text>
-    </TouchableOpacity>
-  );
+  if (children)
+    return (
+      <TouchableOpacity
+        activeOpacity={0.8}
+        onPress={onPress}
+        disabled={disabled}
+        style={containerStyle}
+        {...restProps}
+      >
+        {children}
+      </TouchableOpacity>
+    );
+  else
+    return (
+      <TouchableOpacity
+        activeOpacity={0.8}
+        onPress={onPress}
+        disabled={disabled}
+        style={containerStyle}
+        {...restProps}
+      >
+        <Text style={textStyle}>{title}</Text>
+      </TouchableOpacity>
+    );
 };
 
 export default Button;

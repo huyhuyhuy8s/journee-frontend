@@ -1,4 +1,5 @@
-import type { ButtonProps } from 'react-native';
+import type {ButtonProps} from 'react-native';
+import {type ReactNode} from 'react';
 
 export type TButtonVariant =
   | 'primary'
@@ -15,4 +16,5 @@ export interface IButtonProps extends ButtonProps {
   onPress: () => Promise<void> | void;
   loading?: boolean;
   style?: object;
+  children?: ReactNode;
 }

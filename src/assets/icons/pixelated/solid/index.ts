@@ -81,6 +81,8 @@ export {default as FileImportSolid} from './file-import-solid.svg';
 export {default as FilterAltCircleSolid} from './filter-alt-circle-solid.svg';
 export {default as FilterSolid} from './filter-solid.svg';
 export {default as FireSolid} from './fire-solid.svg';
+export {default as FastForward} from './fast-forward-solid.svg';
+export {default as TurboForward} from './turbo-forward-solid.svg';
 export {default as FlagCheckeredSolid} from './flag-checkered-solid.svg';
 export {default as FlagSolid} from './flag-solid.svg';
 export {default as FolderOpenSolid} from './folder-open-solid.svg';

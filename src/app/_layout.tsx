@@ -11,7 +11,7 @@ import {LocationStateProvider} from '@/contexts/LocationStateContext';
 import {RegionProvider} from '@/contexts/RegionContext';
 import '@/features/map/task';
 
-SplashScreen.preventAutoHideAsync().then();
+void SplashScreen.preventAutoHideAsync();
 
 const RootLayoutNav = () => {
   useAuthMiddleware();

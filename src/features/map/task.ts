@@ -195,7 +195,10 @@ TaskManager.defineTask(
       const {locations} = data;
       const location = locations[0];
 
-      if (!location) return;
+      if (!location) {
+        console.error('❌ No location data received in foreground task');
+        return;
+      }
 
       console.info('📍 Foreground location update:', {
         lat: location.coords.latitude.toFixed(6),
@@ -216,7 +219,6 @@ TaskManager.defineTask(
         );
 
         await userLocationStateService.addLocationToHistory(location);
-
         await syncForegroundLocationToBackend(location);
       } catch (error) {
         console.error('❌ Error processing foreground location:', error);

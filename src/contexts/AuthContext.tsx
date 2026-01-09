@@ -59,7 +59,7 @@ export const AuthProvider = (props: IAuthProviderProps) => {
       }
     };
 
-    loadStoredData().then();
+    void loadStoredData();
   }, []);
 
   const login = async (email: string, password: string): Promise<IResponse | IResponseError> => {

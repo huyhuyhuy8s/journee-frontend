@@ -1,9 +1,9 @@
 export type TBadgeVariant =
-  | 'default'
   | 'primary'
-  | 'warning'
+  | 'secondary'
+  | 'accent'
   | 'danger'
-  | 'success';
+  | 'outline';
 export type TBadgeSize = 'small' | 'medium' | 'large';
 
 export interface IBadgeProps {

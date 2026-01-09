@@ -78,8 +78,7 @@ export const RegionProvider = (props: IRegionProviderProps) => {
   const toUserRegion = async () => {
     const userRegion = await AsyncStorage.getItem(CURRENT_LOCATION);
     const lastProcessedRegion = regionRef.current;
-    console.info('User region', userRegion);
-    console.info('Last process region', lastProcessedRegion);
+    console.info('Updated user region manually');
     if (userRegion) {
       setRegion(JSON.parse(userRegion) || lastProcessedRegion);
     }

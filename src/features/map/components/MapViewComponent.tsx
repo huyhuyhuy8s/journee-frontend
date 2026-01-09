@@ -1,4 +1,4 @@
-import React from 'react';
+import React, {useMemo} from 'react';
 import {StyleSheet} from 'react-native';
 import MapView, {PROVIDER_GOOGLE} from 'react-native-maps';
 import {useRegion} from '@/contexts/RegionContext';
@@ -8,6 +8,13 @@ import {getMapStyle} from '@/features/map/utils/mapStyles';
 export const MapViewComponent = () => {
   const {region} = useRegion();
   const {isDark, colors} = useTheme();
+  const styles = useMemo(() => StyleSheet.create({
+    map: {
+      backgroundColor: colors.green100,
+      width: '100%',
+      height: '100%',
+    },
+  }), [colors]);
 
   return (
     <MapView
@@ -29,15 +36,8 @@ export const MapViewComponent = () => {
       scrollEnabled={true}
       zoomEnabled={true}
       loadingEnabled={true}
-      loadingIndicatorColor={isDark ? colors.green700.toString() : colors.green200.toString()}
-      loadingBackgroundColor={isDark ? colors.green900.toString() : colors.green100.toString()}
+      loadingIndicatorColor={colors.green200.toString()}
+      loadingBackgroundColor={colors.green100.toString()}
     />
   );
 };
-
-const styles = StyleSheet.create({
-  map: {
-    width: '100%',
-    height: '100%',
-  },
-});

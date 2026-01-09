@@ -6,6 +6,7 @@ import {useLocationState} from '@/contexts/LocationStateContext';
 import journalService from '@/services/journalService';
 import {formatInterval} from '@/utils/location';
 import {EUserLocationState} from '@/constants';
+import {FastForward, Pause, Question, TurboForward} from '@/assets/icons/pixelated';
 
 const {FAST_MOVING, SLOW_MOVING, STATIONARY} = EUserLocationState;
 
@@ -54,31 +55,32 @@ export const BackgroundController: React.FC = () => {
   const getStateColor = (state: EUserLocationState): string => {
     switch (state) {
       case FAST_MOVING:
-        return '#EF4444';
+        return colors.orange.toString();
       case SLOW_MOVING:
-        return '#F59E0B';
+        return colors.yellow.toString();
       case STATIONARY:
-        return '#10B981';
+        return colors.green400.toString();
       default:
         return colors.green.toString();
     }
   };
 
-  const getStateEmoji = (state: EUserLocationState): string => {
+  const getStateEmoji = (state: EUserLocationState) => {
     switch (state) {
       case FAST_MOVING:
-        return '🚗';
+        return <TurboForward width={25} height={25} fill={colors.green900.toString()}/>;
       case SLOW_MOVING:
-        return '🚶';
+        return <FastForward width={25} height={25} fill={colors.green900.toString()}/>;
       case STATIONARY:
-        return '🧘';
+        return <Pause width={25} height={25} fill={colors.green900.toString()}/>;
       default:
-        return '❓';
+        return <Question width={25} height={25} fill={colors.green900.toString()}/>;
     }
   };
 
   const styles = StyleSheet.create({
     container: {
+      backgroundColor: colors.green250,
       margin: 16,
     },
     header: {
@@ -86,16 +88,29 @@ export const BackgroundController: React.FC = () => {
       justifyContent: 'space-between',
       alignItems: 'center',
       marginBottom: 12,
+      gap: 4,
     },
     title: {
       fontSize: 18,
-      fontWeight: '600',
+      fontFamily: 'WhyteBold',
       color: colors.green900,
     },
     statusContainer: {
-      flexDirection: 'row',
+      opacity: 0.75,
       alignItems: 'center',
       marginBottom: 16,
+      width: '100%',
+      backgroundColor: colors.green200,
+      alignContent: 'center',
+      justifyContent: 'center',
+      borderRadius: 12,
+      paddingVertical: 16,
+      gap: 12,
+    },
+    statusContext: {
+      flexDirection: 'row',
+      alignItems: 'center',
+      justifyContent: 'center',
     },
     statusDot: {
       width: 10,
@@ -105,15 +120,15 @@ export const BackgroundController: React.FC = () => {
     },
     statusText: {
       fontSize: 14,
-      color: colors.green,
+      color: colors.green900,
     },
     stateCard: {
-      backgroundColor: colors.green,
+      backgroundColor: colors.green200,
       borderRadius: 12,
-      padding: 12,
-      marginBottom: 16,
+      paddingHorizontal: 36,
+      paddingVertical: 12,
+      borderColor: colors.green700,
       borderWidth: 1,
-      borderColor: colors.green,
     },
     stateHeader: {
       flexDirection: 'row',
@@ -128,13 +143,13 @@ export const BackgroundController: React.FC = () => {
     },
     stateTitle: {
       fontSize: 16,
-      fontWeight: '600',
-      color: colors.green900,
+      fontFamily: 'WhyteBold',
+      color: colors.salmon,
       textTransform: 'capitalize',
     },
     stateInterval: {
       fontSize: 13,
-      color: colors.green,
+      color: colors.green300,
       marginTop: 2,
     },
     stateIndicator: {
@@ -144,7 +159,7 @@ export const BackgroundController: React.FC = () => {
     },
     permissionWarning: {
       fontSize: 12,
-      color: '#F59E0B',
+      color: colors.yellow,
       marginTop: 8,
       textAlign: 'center',
     },
@@ -155,45 +170,46 @@ export const BackgroundController: React.FC = () => {
       <View style={styles.header}>
         <Text style={styles.title}>Background Tracking</Text>
         {unsyncedCount > 0 && (
-          <Badge text={`${unsyncedCount} unsynced`} variant="warning"/>
+          <Badge text={`${unsyncedCount} unsynced`} variant="outline"/>
         )}
       </View>
 
       <View style={styles.statusContainer}>
-        <View
-          style={[
-            styles.statusDot,
-            {
-              backgroundColor: isBackgroundStarted ? '#10B981' : colors.green,
-            },
-          ]}
-        />
-        <Text style={styles.statusText}>
-          {isBackgroundStarted ? 'Active' : 'Inactive'}
-        </Text>
-      </View>
-
-      {isBackgroundStarted && (
-        <View style={styles.stateCard}>
-          <View style={styles.stateHeader}>
-            <Text style={styles.stateEmoji}>{getStateEmoji(currentState)}</Text>
-            <View style={styles.stateInfo}>
-              <Text style={styles.stateTitle}>
-                {currentState.replace('_', ' ')}
-              </Text>
-              <Text style={styles.stateInterval}>
-                Updates every {formatInterval(currentInterval)}
-              </Text>
-            </View>
-          </View>
+        <View style={styles.statusContext}>
           <View
             style={[
-              styles.stateIndicator,
-              {backgroundColor: getStateColor(currentState)},
+              styles.statusDot,
+              {
+                backgroundColor: isBackgroundStarted ? colors.green400 : colors.orange,
+              },
             ]}
           />
+          <Text style={styles.statusText}>
+            {isBackgroundStarted ? 'Active' : 'Inactive'}
+          </Text>
         </View>
-      )}
+        {isBackgroundStarted && (
+          <View style={styles.stateCard}>
+            <View style={styles.stateHeader}>
+              {getStateEmoji(currentState)}
+              <View style={styles.stateInfo}>
+                <Text style={styles.stateTitle}>
+                  {currentState.replace('_', ' ')}
+                </Text>
+                <Text style={styles.stateInterval}>
+                  Updates every {formatInterval(currentInterval)}
+                </Text>
+              </View>
+            </View>
+            <View
+              style={[
+                styles.stateIndicator,
+                {backgroundColor: getStateColor(currentState)},
+              ]}
+            />
+          </View>
+        )}
+      </View>
 
       <Button
         title={isBackgroundStarted ? 'Stop Tracking' : 'Start Tracking'}

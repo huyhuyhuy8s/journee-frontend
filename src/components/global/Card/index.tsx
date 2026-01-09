@@ -8,7 +8,8 @@ const Card = (props: ICardProps) => {
 
   const styles = StyleSheet.create({
     card: {
-      padding: 12,
+      paddingHorizontal: 12,
+      paddingVertical: 16,
       borderRadius: 10,
       alignItems: 'center',
       justifyContent: 'center',
