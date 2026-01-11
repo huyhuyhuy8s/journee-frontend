@@ -1,77 +1,16 @@
-import React, {useEffect, useState} from 'react';
-import {StyleSheet, View} from 'react-native';
-import AsyncStorage from '@react-native-async-storage/async-storage';
-import {Button, Card, Text} from '@/components/global';
+import {Card, Text} from '@/components/global';
+import ForegroundStatusContainer from '@/features/map/components/ForegroundStatusContainer';
+import {useForegroundController} from '@/features/map/hooks/useForegroundController';
 import {useTheme} from '@/theme';
-import {useLocationState} from '@/contexts/LocationStateContext';
-import {ASYNC_STORAGE_KEYS} from '@/constants';
-import {LocationPin} from '@/assets/icons/pixelated';
+import {type FC} from 'react';
+import {StyleSheet, View} from 'react-native';
 
-const {CURRENT_LOCATION} = ASYNC_STORAGE_KEYS;
-
-interface ICurrentLocation {
-  latitude: number;
-  longitude: number;
-  timestamp: number;
-}
-
-export const ForegroundController: React.FC = () => {
+export const ForegroundController: FC = () => {
   const {colors} = useTheme();
   const {
     isForegroundStarted,
-    startForegroundTracking,
-    stopForegroundTracking,
-    hasLocationPermission,
-    requestPermissions,
-  } = useLocationState();
-
-  const [currentLocation, setCurrentLocation] =
-    useState<ICurrentLocation | null>(null);
-  const [updateCount, setUpdateCount] = useState<number>(0);
-
-  useEffect(() => {
-    const interval = setInterval(async () => {
-      const locationJson = await AsyncStorage.getItem(CURRENT_LOCATION);
-      if (locationJson) {
-        try {
-          const location = JSON.parse(locationJson);
-          setCurrentLocation(location);
-          setUpdateCount((prev) => prev + 1);
-        } catch (error) {
-          console.error('Error parsing location from AsyncStorage', error);
-        }
-      }
-    }, 1000);
-
-    return () => clearInterval(interval);
-  }, []);
-
-  const handleToggleTracking = async (): Promise<void> => {
-    if (!hasLocationPermission) {
-      const granted = await requestPermissions();
-      if (!granted) {
-        alert('Location permission is required');
-        return;
-      }
-    }
-
-    if (isForegroundStarted) {
-      await stopForegroundTracking();
-      setCurrentLocation(null);
-      setUpdateCount(0);
-    } else {
-      await startForegroundTracking();
-    }
-  };
-
-  const getTimeSinceUpdate = (): string => {
-    if (!currentLocation) return '-';
-
-    const seconds = Math.floor((Date.now() - currentLocation.timestamp) / 1000);
-    if (seconds < 60) return `${seconds}s ago`;
-    if (seconds < 3600) return `${Math.floor(seconds / 60)}m ago`;
-    return `${Math.floor(seconds / 3600)}h ago`;
-  };
+    hasForegroundPermission,
+  } = useForegroundController();
 
   const styles = StyleSheet.create({
     container: {
@@ -110,55 +49,6 @@ export const ForegroundController: React.FC = () => {
       borderRadius: 6,
       backgroundColor: colors.yellow,
     },
-    infoCard: {
-      width: '100%',
-      backgroundColor: colors.green200,
-      borderRadius: 12,
-      padding: 16,
-      marginBottom: 16,
-      borderWidth: 1,
-      borderColor: colors.green400,
-    },
-    infoRow: {
-      flexDirection: 'row',
-      justifyContent: 'space-between',
-      alignItems: 'center',
-      paddingVertical: 8,
-    },
-    infoLabel: {
-      fontSize: 14,
-      color: colors.green800,
-      fontFamily: 'WhyteMedium',
-    },
-    infoValue: {
-      fontSize: 14,
-      color: colors.green900,
-      fontFamily: 'PPNeueMontrealRegular',
-    },
-    divider: {
-      height: 1,
-      backgroundColor: colors.green700,
-    },
-    placeholderCard: {
-      backgroundColor: colors.green200,
-      opacity: 0.75,
-      borderRadius: 12,
-      padding: 32,
-      marginBottom: 16,
-      alignItems: 'center',
-      borderColor: colors.green700,
-      borderStyle: 'dashed',
-      gap: 12,
-    },
-    placeholderIcon: {
-      fontSize: 48,
-      marginBottom: 12,
-    },
-    placeholderText: {
-      fontSize: 14,
-      color: colors.green900,
-      textAlign: 'center',
-    },
     permissionWarning: {
       fontSize: 12,
       color: colors.yellow,
@@ -179,60 +69,11 @@ export const ForegroundController: React.FC = () => {
         )}
       </View>
 
-      {isForegroundStarted && currentLocation && (
-        <View style={styles.infoCard}>
-          <View style={styles.infoRow}>
-            <Text style={styles.infoLabel}>Latitude</Text>
-            <Text style={styles.infoValue}>
-              {currentLocation.latitude}
-            </Text>
-          </View>
+      <ForegroundStatusContainer/>
 
-          <View style={styles.divider}/>
-
-          <View style={styles.infoRow}>
-            <Text style={styles.infoLabel}>Longitude</Text>
-            <Text style={styles.infoValue}>
-              {currentLocation.longitude}
-            </Text>
-          </View>
-
-          <View style={styles.divider}/>
-
-          <View style={styles.infoRow}>
-            <Text style={styles.infoLabel}>Updates</Text>
-            <Text style={styles.infoValue}>{updateCount}</Text>
-          </View>
-
-          <View style={styles.divider}/>
-
-          <View style={styles.infoRow}>
-            <Text style={styles.infoLabel}>Last Update</Text>
-            <Text style={styles.infoValue}>{getTimeSinceUpdate()}</Text>
-          </View>
-        </View>
-      )}
-
-      {!isForegroundStarted && (
-        <View style={styles.placeholderCard}>
-          <LocationPin width={50} height={50} fill={colors.green900}/>
-          <Text style={styles.placeholderText}>
-            Start tracking to see your real-time location
-          </Text>
-        </View>
-      )}
-
-      <Button
-        title={
-          isForegroundStarted ? 'Stop Live Tracking' : 'Start Live Tracking'
-        }
-        variant={isForegroundStarted ? 'danger' : 'primary'}
-        onPress={handleToggleTracking}
-      />
-
-      {!hasLocationPermission && (
+      {!hasForegroundPermission && (
         <Text style={styles.permissionWarning}>
-          ⚠️ Location permission required
+          ⚠️ Foreground location permission required
         </Text>
       )}
     </Card>

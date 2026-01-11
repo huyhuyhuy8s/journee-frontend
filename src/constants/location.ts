@@ -1,6 +1,19 @@
+import {type ILocation} from '@/types';
+
 export const MAX_HISTORY_SIZE = 10;
 export const SAME_LOCATION_THRESHOLD = 0.05;
 export const MIN_VISIT_DURATION = 60000;
+export const FOREGROUND_INTERVAL = {
+  TIME: 1000,
+  DISTANCE: 1,
+};
+
+export const DEFAULT_LOCATION_CONTEXT: ILocation = {
+  coordinate: {
+    latitude: 0,
+    longitude: 0,
+  },
+};
 
 export enum EUserLocationState {
   FAST_MOVING = 'FAST_MOVING',

@@ -1,7 +1,13 @@
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import type * as Location from 'expo-location';
 import type {ILocationHistoryItem, IStateTransitionResult} from '@/types/location';
-import {ASYNC_STORAGE_KEYS, EUserLocationState, MAX_HISTORY_SIZE, STATE_TRANSITION_THRESHOLDS} from '@/constants';
+import {
+  ASYNC_STORAGE_KEYS,
+  EUserLocationState,
+  MAX_HISTORY_SIZE,
+  STATE_INTERVALS,
+  STATE_TRANSITION_THRESHOLDS,
+} from '@/constants';
 import {calculateDistance} from '@/utils/location';
 
 const {STATE, HISTORY, LAST_LOCATION} = ASYNC_STORAGE_KEYS;
@@ -205,7 +211,6 @@ class UserLocationStateService {
   };
 
   getCurrentInterval = async (): Promise<number> => {
-    const {STATE_INTERVALS} = await import('@/constants');
     const state = await this.getCurrentState();
     return STATE_INTERVALS[state];
   };

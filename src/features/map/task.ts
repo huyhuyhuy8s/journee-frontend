@@ -3,7 +3,7 @@ import * as Location from 'expo-location';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import userLocationStateService from '@/services/userLocationStateService';
 import journalService from '@/services/journalService';
-import {ASYNC_STORAGE_KEYS, EUserLocationState, STATE_INTERVALS} from '@/constants';
+import {ASYNC_STORAGE_KEYS, EUserLocationState} from '@/constants';
 import {isSameLocation} from '@/utils/location';
 
 export const BACKGROUND_LOCATION_TASK = 'background-location-task';
@@ -117,28 +117,19 @@ TaskManager.defineTask(
     }
 
     if (data) {
-      const {locations} = data;
-      const location = locations[0];
-
+      const location = data.locations[0];
       if (!location) return;
 
       try {
-        const currentState = await userLocationStateService.getCurrentState();
-        const requiredInterval = STATE_INTERVALS[currentState];
+        const requiredInterval = await userLocationStateService.getCurrentInterval();
 
-        const lastProcessTimeStr = await AsyncStorage.getItem(
-          LAST_BACKGROUND_PROCESS,
-        );
-        const lastProcessTime = lastProcessTimeStr
-          ? parseInt(lastProcessTimeStr)
-          : 0;
+        const lastProcessTimeStr = await AsyncStorage.getItem(LAST_BACKGROUND_PROCESS);
+        const lastProcessTime = lastProcessTimeStr ? parseInt(lastProcessTimeStr) : 0;
         const now = Date.now();
-        const timeSinceLastProcess = now - lastProcessTime;
+        const timeSinceLastProcessInSecond = Math.round((now - lastProcessTime) / 1000);
 
-        if (timeSinceLastProcess < requiredInterval) {
-          console.info(
-            `⏱️ Skipping update - only ${Math.round(timeSinceLastProcess / 1000)}s passed, need ${Math.round(requiredInterval / 1000)}s`,
-          );
+        if (timeSinceLastProcessInSecond < requiredInterval) {
+          console.info(`⏱️ Skipping update - only ${timeSinceLastProcessInSecond}s passed, need ${Math.round(requiredInterval / 1000)}s`);
           return;
         }
 
@@ -146,7 +137,7 @@ TaskManager.defineTask(
           lat: location.coords.latitude.toFixed(6),
           lng: location.coords.longitude.toFixed(6),
           speed: location.coords.speed,
-          timeSinceLastProcess: `${Math.round(timeSinceLastProcess / 1000)}s`,
+          timeSinceLastProcess: `${timeSinceLastProcessInSecond}s`,
         });
 
         await AsyncStorage.setItem(LAST_BACKGROUND_PROCESS, now.toString());
@@ -155,10 +146,12 @@ TaskManager.defineTask(
           await userLocationStateService.determineState(location);
         const newState = stateResult.newState;
 
-        console.info(
-          `🏃 Current state: ${newState} (v: ${stateResult.velocity?.toFixed(2)} km/h)`,
-        );
+        if (!stateResult.shouldUpdateInterval) {
+          console.info('ℹ️ No interval update needed, skipping further processing.');
+          return;
+        }
 
+        console.info(`🏃 Current state: ${newState} (v: ${stateResult.velocity?.toFixed(2)} km/h)`);
         switch (newState) {
           case FAST_MOVING:
             await handleFastMovingVisit(location);
@@ -169,10 +162,7 @@ TaskManager.defineTask(
             await journalService.addOrUpdateEntry(location);
             break;
         }
-
-        if (stateResult.shouldUpdateInterval) {
-          await AsyncStorage.setItem(LOCATION_STATE_CHANGED, 'true');
-        }
+        await AsyncStorage.setItem(LOCATION_STATE_CHANGED, 'true');
       } catch (error) {
         console.error('❌ Error processing background location:', error);
       }
@@ -192,8 +182,7 @@ TaskManager.defineTask(
     }
 
     if (data) {
-      const {locations} = data;
-      const location = locations[0];
+      const location = data.locations[0];
 
       if (!location) {
         console.error('❌ No location data received in foreground task');
@@ -224,5 +213,6 @@ TaskManager.defineTask(
         console.error('❌ Error processing foreground location:', error);
       }
     }
+    console.warn('⚠️ No data received in foreground location task');
   },
 );
